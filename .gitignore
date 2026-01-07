@@ -1,0 +1,27 @@
+# 旧版本文件
+dailyfocus-v*.html
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 备份文件
+*.bak
+*~
+nul
+
+# Node modules
+node_modules/
+
+# 其他不需要版本控制的文件
+package.json
+web-version.html
+快速启动指南.md
+src/
+安装并运行.bat

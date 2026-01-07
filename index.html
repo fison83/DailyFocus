@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DailyFocus v5 - 每日专注</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 侧边栏 -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">DF</div>
+      <div class="logo-text">
+        <h1>DailyFocus</h1>
+        <p>v5</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="inbox">
+        <span class="nav-item-icon">📥</span>
+        <span>收集箱</span>
+      </button>
+      <button class="nav-item" data-view="quadrant">
+        <span class="nav-item-icon">📊</span>
+        <span>四象限</span>
+      </button>
+      <button class="nav-item" data-view="all-tasks">
+        <span class="nav-item-icon">📋</span>
+        <span>全部任务</span>
+      </button>
+      <button class="nav-item" data-view="calendar">
+        <span class="nav-item-icon">📅</span>
+        <span>日历</span>
+      </button>
+      <button class="nav-item" data-view="stats">
+        <span class="nav-item-icon">📈</span>
+        <span>统计</span>
+      </button>
+      <button class="nav-item" data-view="goals">
+        <span class="nav-item-icon">🎯</span>
+        <span>目标</span>
+      </button>
+      <button class="nav-item" data-view="tags">
+        <span class="nav-item-icon">🏷️</span>
+        <span>标签</span>
+      </button>
+      <button class="nav-item" data-view="reading">
+        <span class="nav-item-icon">📚</span>
+        <span>阅读</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-date" id="dateDisplay"></div>
+    </div>
+  </aside>
+
+  <!-- 主内容区 -->
+  <div class="main-wrapper">
+    <!-- 目标横幅 -->
+    <div class="goal-banner" id="goalBanner">
+      <div class="goal-banner-content">
+        <div class="goal-info">
+          <span class="goal-icon">🎯</span>
+          <div class="goal-text">
+            <div class="goal-title" id="bannerGoalTitle">加载中...</div>
+            <div class="goal-meta">
+              <span class="goal-countdown">
+                ⏱️ <span id="bannerDaysLeft">--</span> 天
+              </span>
+              <span class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="bannerProgress" style="width: 0%"></div>
+                </div>
+                <span id="bannerProgressText">0%</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="goal-actions">
+          <button class="btn-banner" onclick="exportData()">📤 导出</button>
+          <button class="btn-banner" onclick="importData()">📥 导入</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快速添加栏 -->
+    <div class="quick-add-bar" id="quickAddBar">
+      <div class="quick-add-input-wrapper">
+        <input
+          type="text"
+          class="quick-add-input"
+          id="quickInput"
+          placeholder="✨ 输入任务，按 Enter 快速添加..."
+        >
+        <button class="btn-add" onclick="quickAdd()">
+          <span>+</span> 添加
+        </button>
+      </div>
+      <div class="priority-tags">
+        <span class="priority-btn" id="priorityBtn" onclick="togglePriority()">⭐ 重要</span>
+        <span class="priority-btn urgent" id="urgencyBtn" onclick="toggleUrgency()">🔥 紧急</span>
+      </div>
+      <div class="quick-tags" id="quickTags"></div>
+    </div>
+
+    <!-- 内容区域 -->
+    <div class="content-area">
+      <!-- 收集箱视图 -->
+      <div class="view-container active" id="inboxView">
+        <div class="inbox-section">
+          <div class="inbox-header">
+            <h2>
+              📥 收集箱
+              <span class="inbox-count" id="inboxCount">0</span>
+            </h2>
+            <!-- V5: 整理按钮简化 -->
+            <button class="btn-organize" onclick="organizeInbox()">
+              整理
+            </button>
+          </div>
+          <div class="task-list" id="inboxList"></div>
+        </div>
+      </div>
+
+      <!-- 四象限视图 -->
+      <div class="view-container" id="quadrantView">
+        <div class="quadrant-grid">
+          <div class="quadrant">
+            <div class="quadrant-header">
+              <div class="quadrant-dot dot-red"></div>
+              <div class="quadrant-info">
+                <h3>重要且紧急</h3>
+                <p>立即处理</p>
+              </div>
+              <span class="quadrant-count" id="count-urgent-important">0</span>
+            </div>
+            <div class="quadrant-tasks" id="q-urgent-important"></div>
+          </div>
+
+          <div class="quadrant">
+            <div class="quadrant-header">
+              <div class="quadrant-dot dot-green"></div>
+              <div class="quadrant-info">
+                <h3>重要不紧急</h3>
+                <p>计划安排</p>
+              </div>
+              <span class="quadrant-count" id="count-important">0</span>
+            </div>
+            <div class="quadrant-tasks" id="q-important"></div>
+          </div>
+
+          <div class="quadrant">
+            <div class="quadrant-header">
+              <div class="quadrant-dot dot-orange"></div>
+              <div class="quadrant-info">
+                <h3>紧急不重要</h3>
+                <p>授权他人</p>
+              </div>
+              <span class="quadrant-count" id="count-urgent">0</span>
+            </div>
+            <div class="quadrant-tasks" id="q-urgent"></div>
+          </div>
+
+          <div class="quadrant">
+            <div class="quadrant-header">
+              <div class="quadrant-dot dot-gray"></div>
+              <div class="quadrant-info">
+                <h3>不重要不紧急</h3>
+                <p>减少删除</p>
+              </div>
+              <span class="quadrant-count" id="count-normal">0</span>
+            </div>
+            <div class="quadrant-tasks" id="q-normal"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 全部任务视图 -->
+      <div class="view-container" id="all-tasksView">
+        <div class="all-tasks-toolbar">
+          <div class="all-tasks-search">
+            <input type="text" id="taskSearchInput" placeholder="🔍 搜索任务标题或描述..." oninput="allTasksManager.setSearch(this.value)">
+          </div>
+          <div class="all-tasks-filters">
+            <button class="filter-btn active" data-filter="all" onclick="allTasksManager.setFilter('all')">全部</button>
+            <button class="filter-btn" data-filter="active" onclick="allTasksManager.setFilter('active')">进行中</button>
+            <button class="filter-btn" data-filter="completed" onclick="allTasksManager.setFilter('completed')">已完成</button>
+            <button class="filter-btn" data-filter="inbox" onclick="allTasksManager.setFilter('inbox')">待整理</button>
+            <button class="filter-btn" data-filter="organized" onclick="allTasksManager.setFilter('organized')">已整理</button>
+            <button class="filter-btn deleted-filter" data-filter="deleted" onclick="allTasksManager.setFilter('deleted')">♻️ 回收站</button>
+          </div>
+          <div class="all-tasks-tags" id="tagFilters"></div>
+        </div>
+        <div class="all-tasks-actions">
+          <div class="all-tasks-actions-left">
+            <div class="select-all-wrapper">
+              <input type="checkbox" id="selectAllCheckbox" onchange="allTasksManager.toggleSelectAll()">
+              <label>全选</label>
+            </div>
+            <span class="selected-count" id="selectedCount">已选择 0 项</span>
+          </div>
+          <button class="batch-delete-btn" id="batchDeleteBtn" onclick="allTasksManager.batchDelete()" disabled>🗑️ 批量删除</button>
+        </div>
+        <div id="allTasksList"></div>
+      </div>
+
+      <!-- 日历视图 -->
+      <div class="view-container" id="calendarView">
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <button class="calendar-nav-btn" onclick="calendarManager.prevMonth()">◀</button>
+            <h2 class="calendar-title" id="calendarTitle">2025年1月</h2>
+            <button class="calendar-nav-btn" onclick="calendarManager.nextMonth()">▶</button>
+          </div>
+          <div class="calendar-weekdays">
+            <div class="calendar-weekday">日</div>
+            <div class="calendar-weekday">一</div>
+            <div class="calendar-weekday">二</div>
+            <div class="calendar-weekday">三</div>
+            <div class="calendar-weekday">四</div>
+            <div class="calendar-weekday">五</div>
+            <div class="calendar-weekday">六</div>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
+      </div>
+
+      <!-- 统计视图 -->
+      <div class="view-container" id="statsView">
+        <div class="stats-toolbar">
+          <div class="stats-time-range">
+            <span class="time-range-label">时间范围:</span>
+            <button class="time-range-btn active" data-range="all" onclick="statsManager.setTimeRange('all')">全部</button>
+            <button class="time-range-btn" data-range="today" onclick="statsManager.setTimeRange('today')">今天</button>
+            <button class="time-range-btn" data-range="week" onclick="statsManager.setTimeRange('week')">本周</button>
+            <button class="time-range-btn" data-range="month" onclick="statsManager.setTimeRange('month')">本月</button>
+            <button class="time-range-btn" data-range="year" onclick="statsManager.setTimeRange('year')">今年</button>
+            <button class="time-range-btn" data-range="custom" onclick="statsManager.setTimeRange('custom')">自定义</button>
+          </div>
+          <div class="custom-date-range" id="customDateRange">
+            <input type="date" id="customStartDate" onchange="statsManager.setCustomRange(this.value, document.getElementById('customEndDate').value)">
+            <span>至</span>
+            <input type="date" id="customEndDate" onchange="statsManager.setCustomRange(document.getElementById('customStartDate').value, this.value)">
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card" style="cursor: pointer;" title="点击查看详情" onclick="statsManager.showTaskList('total')">
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">总任务</div>
+          </div>
+          <div class="stat-card" style="cursor: pointer;" title="点击查看详情" onclick="statsManager.showTaskList('completed')">
+            <div class="stat-value" id="stat-completed">0</div>
+            <div class="stat-label">已完成</div>
+          </div>
+          <div class="stat-card" style="cursor: pointer;" title="点击查看详情" onclick="statsManager.showTaskList('inbox')">
+            <div class="stat-value" id="stat-inbox">0</div>
+            <div class="stat-label">待整理</div>
+          </div>
+        </div>
+        <div class="stats-progress-section">
+          <div class="stats-progress-header">
+            <span class="stats-progress-label">完成率</span>
+            <span class="stats-progress-value" id="stat-rate-text">0%</span>
+          </div>
+          <div class="stats-progress-bar">
+            <div class="stats-progress-fill" id="stat-rate-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 目标视图 -->
+      <div class="view-container" id="goalsView">
+        <div class="goals-view">
+          <div class="goals-header">
+            <h2>🎯 我的目标</h2>
+            <button class="btn-create-goal" onclick="createGoal()">+ 新建目标</button>
+          </div>
+
+          <div class="goals-section">
+            <div class="goals-section-title">🔄 进行中</div>
+            <div class="goals-grid" id="activeGoalsGrid"></div>
+          </div>
+
+          <div class="goals-section">
+            <div class="goals-section-title">✅ 已完成</div>
+            <div class="goals-grid" id="completedGoalsGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 标签视图 -->
+      <div class="view-container" id="tagsView">
+        <div class="tag-manager">
+          <div class="tag-manager-header">
+            <h3>🏷️ 标签管理</h3>
+            <button class="btn-add-tag" onclick="showAddTagInput()">+ 新建</button>
+          </div>
+          <div class="tags-list" id="tagsList"></div>
+          <div id="addTagInputWrapper" style="display: none; margin-top: 12px;">
+            <div style="display: flex; gap: 8px;">
+              <input type="text" class="form-input" id="newTagInput" placeholder="输入标签名称" style="flex: 1;">
+              <button class="btn-save" onclick="addNewTag()">添加</button>
+              <button class="btn-cancel" onclick="hideAddTagInput()">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 阅读记录视图 -->
+      <div class="view-container" id="readingView">
+        <div class="reading-header">
+          <h2>📚 阅读记录</h2>
+          <button class="btn-create-reading" onclick="createReadingRecord()">+ 新建记录</button>
+        </div>
+        <div class="reading-list" id="readingList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑面板（任务） -->
+  <div class="edit-overlay" id="editOverlay" onclick="closeEditPanel()"></div>
+  <div class="edit-panel" id="editPanel">
+    <div class="edit-header">
+      <h2>编辑任务</h2>
+      <button class="btn-close-panel" onclick="closeEditPanel()">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">任务标题</label>
+        <input type="text" class="form-input" id="editTitle" placeholder="输入任务标题">
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">任务描述</label>
+        <textarea class="form-textarea" id="editDesc" placeholder="添加详细描述..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">重要性</label>
+        <select class="form-select" id="editPriority">
+          <option value="false">不重要</option>
+          <option value="true">重要</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">紧急性</label>
+        <select class="form-select" id="editUrgency">
+          <option value="false">不紧急</option>
+          <option value="true">紧急</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">截止日期</label>
+        <input type="date" class="form-input" id="editDueDate">
+        <div class="quick-picks">
+          <span class="quick-pick" onclick="setDate(0)">今天</span>
+          <span class="quick-pick" onclick="setDate(1)">明天</span>
+          <span class="quick-pick" onclick="setDate(7)">下周</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">标签</label>
+        <select class="form-select" id="editTag"></select>
+      </div>
+    </div>
+    <div class="edit-footer">
+      <button class="btn-delete" onclick="deleteTask()">删除</button>
+      <button class="btn-cancel" onclick="closeEditPanel()">取消</button>
+      <button class="btn-save" onclick="saveTask()">保存</button>
+    </div>
+  </div>
+
+  <!-- 编辑面板（目标） -->
+  <div class="edit-overlay" id="goalOverlay" onclick="closeGoalPanel()"></div>
+  <div class="edit-panel" id="goalPanel">
+    <div class="edit-header">
+      <h2 id="goalPanelTitle">新建目标</h2>
+      <button class="btn-close-panel" onclick="closeGoalPanel()">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">目标标题</label>
+        <input type="text" class="form-input" id="goalTitle" placeholder="例如：Q1 完成产品上线">
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">目标描述</label>
+        <textarea class="form-textarea" id="goalDesc" placeholder="描述这个目标的具体内容..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">截止日期</label>
+        <input type="date" class="form-input" id="goalDueDate">
+        <div class="quick-picks">
+          <span class="quick-pick" onclick="setGoalDate(30)">30天后</span>
+          <span class="quick-pick" onclick="setGoalDate(90)">3个月后</span>
+          <span class="quick-pick" onclick="setGoalDate(365)">1年后</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">当前进度 (%)</label>
+        <input type="number" class="form-input" id="goalProgress" min="0" max="100" value="0" placeholder="0-100">
+      </div>
+    </div>
+    <div class="edit-footer">
+      <button class="btn-delete" id="btnDeleteGoal" onclick="deleteGoal()" style="display: none;">删除</button>
+      <button class="btn-cancel" onclick="closeGoalPanel()">取消</button>
+      <button class="btn-save" onclick="saveGoal()">保存</button>
+    </div>
+  </div>
+
+  <!-- 编辑面板（阅读记录）V5: 可折叠卡片设计 -->
+  <div class="edit-overlay" id="readingOverlay" onclick="closeReadingPanel()"></div>
+  <div class="edit-panel" id="readingPanel" style="max-height: 90vh;">
+    <div class="edit-header">
+      <h2 id="readingPanelTitle">新建阅读记录</h2>
+      <button class="btn-close-panel" onclick="closeReadingPanel()">×</button>
+    </div>
+
+    <!-- 基本信息 -->
+    <div class="collapsible-section">
+      <div class="collapsible-header" onclick="ui.toggleSection(this.parentElement)">
+        <span class="collapsible-header-title required">📖 基本信息</span>
+        <span class="collapsible-icon">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="collapsible-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">书名</label>
+              <input type="text" class="form-input" id="readingTitle" placeholder="输入书名">
+            </div>
+            <div class="form-group">
+              <label class="form-label">作者</label>
+              <input type="text" class="form-input" id="readingAuthor" placeholder="作者名">
+            </div>
+            <div class="form-group">
+              <label class="form-label">阅读时长（天）</label>
+              <input type="number" class="form-input" id="readingDays" min="0" placeholder="例：3">
+            </div>
+            <div class="form-group">
+              <label class="form-label">阅读时长（小时）</label>
+              <input type="number" class="form-input" id="readingHours" min="0" step="0.5" placeholder="例：5">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">评分</label>
+              <div class="rating-stars" id="ratingStars">
+                <span class="rating-star" data-rating="1">★</span>
+                <span class="rating-star" data-rating="2">★</span>
+                <span class="rating-star" data-rating="3">★</span>
+                <span class="rating-star" data-rating="4">★</span>
+                <span class="rating-star" data-rating="5">★</span>
+              </div>
+              <input type="hidden" id="readingRating" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 一句话唠明白 -->
+    <div class="collapsible-section">
+      <div class="collapsible-header" onclick="ui.toggleSection(this.parentElement)">
+        <span class="collapsible-header-title required">💬 一句话唠明白</span>
+        <span class="collapsible-icon">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="collapsible-body">
+          <div class="form-group">
+            <label class="form-label">这本书到底在说啥？（大白话）</label>
+            <textarea class="form-textarea" id="readingSummary" placeholder="用大白话概括这本书的核心内容..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 最戳我的点 -->
+    <div class="collapsible-section">
+      <div class="collapsible-header" onclick="ui.toggleSection(this.parentElement)">
+        <span class="collapsible-header-title required">✨ 最戳我的点</span>
+        <span class="collapsible-icon">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="collapsible-body">
+          <div class="key-points-list">
+            <div class="key-point-item">
+              <span class="key-point-number">1</span>
+              <input type="text" class="form-input key-point-input" id="keyPoint1" placeholder="印象最深的收获/启发">
+            </div>
+            <div class="key-point-item">
+              <span class="key-point-number">2</span>
+              <input type="text" class="form-input key-point-input" id="keyPoint2" placeholder="印象最深的收获/启发">
+            </div>
+            <div class="key-point-item">
+              <span class="key-point-number">3</span>
+              <input type="text" class="form-input key-point-input" id="keyPoint3" placeholder="印象最深的收获/启发">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 我的真实想法 -->
+    <div class="collapsible-section">
+      <div class="collapsible-header" onclick="ui.toggleSection(this.parentElement)">
+        <span class="collapsible-header-title required">💭 我的真实想法</span>
+        <span class="collapsible-icon">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="collapsible-body">
+          <div class="form-group">
+            <label class="form-label">我信作者说的不？哪个点特认同/想抬杠？</label>
+            <textarea class="form-textarea" id="readingThoughts" placeholder="说说你的真实看法..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 能落地的小事 -->
+    <div class="collapsible-section">
+      <div class="collapsible-header" onclick="ui.toggleSection(this.parentElement)">
+        <span class="collapsible-header-title required">🎯 能落地的小事</span>
+        <span class="collapsible-icon">▼</span>
+      </div>
+      <div class="collapsible-content">
+        <div class="collapsible-body">
+          <div class="form-group">
+            <label class="form-label">看完想改啥？一个具体小行动</label>
+            <textarea class="form-textarea" id="readingAction" placeholder="比如：下次开会试试书里的沟通法..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 深度扩展（可选） -->
+    <div class="deep-dive-section">
+      <div class="deep-dive-toggle" onclick="toggleDeepDive()">
+        <span id="deepDiveIcon">▶</span>
+        <span>深度扩展（可选）</span>
+      </div>
+      <div class="deep-dive-content" id="deepDiveContent">
+        <!-- 主题阅读串一串 -->
+        <div class="reading-form-section">
+          <div class="reading-form-section-title">📚 主题阅读串一串</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">归到哪个主题下</label>
+              <input type="text" class="form-input" id="readingTopic" placeholder="比如：怎么养多肉、高效记笔记">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">和同主题其他书比</label>
+              <input type="text" class="form-input" id="readingComparison" placeholder="观点差不多/互补着看/完全不一样">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">看完这本，我对这个主题的新想法</label>
+              <textarea class="form-textarea" id="readingNewIdea" placeholder="说说你的新想法..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- 碎碎念补充 -->
+        <div class="reading-form-section">
+          <div class="reading-form-section-title">💎 碎碎念补充</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">超喜欢的金句/案例</label>
+              <textarea class="form-textarea" id="readingQuote" placeholder="抄一句或记个大概..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">这本书的亮点/小缺点</label>
+              <textarea class="form-textarea" id="readingProsCons" placeholder="说说优缺点..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- 后续小计划 -->
+        <div class="reading-form-section">
+          <div class="reading-form-section-title">📝 后续小计划</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">还有啥没搞懂的疑问</label>
+              <textarea class="form-textarea" id="readingQuestions" placeholder="没搞懂的地方..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">想接着读的相关书</label>
+              <textarea class="form-textarea" id="readingNextBooks" placeholder="相关书单..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">推荐给哪些朋友</label>
+              <input type="text" class="form-input" id="readingRecommend" placeholder="朋友名字...">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="edit-footer">
+      <button class="btn-delete" id="btnDeleteReading" onclick="deleteReading()" style="display: none;">删除</button>
+      <button class="btn-cancel" onclick="closeReadingPanel()">取消</button>
+      <button class="btn-save" onclick="saveReadingRecord()">保存</button>
+    </div>
+  </div>
+
+  <!-- 隐藏的文件输入 -->
+  <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+
+  <!-- 加载JavaScript模块 -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/reading.js"></script>
+  <script src="js/all-tasks.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
