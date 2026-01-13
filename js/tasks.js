@@ -383,7 +383,7 @@ class TaskManager {
               ${task.dueDate ? `<span>📅 ${task.dueDate}</span>` : ''}
             </div>
           </div>
-          <button class="task-delete-btn" onclick="event.stopPropagation(); taskManager.permanentDeleteTask('${task.id}')" title="永久删除">×</button>
+          <button class="task-delete-btn" onclick="event.stopPropagation(); if(confirm('确定要永久删除这个任务吗？')){ taskManager.permanentDeleteTask('${task.id}'); taskManager.render(); }" title="永久删除">×</button>
         </div>
       `).join('');
     }
