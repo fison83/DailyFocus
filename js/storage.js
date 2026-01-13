@@ -1,10 +1,32 @@
 // 数据存储模块
 class Storage {
   constructor() {
-    this.tasks = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TASKS) || '[]');
-    this.goals = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.GOALS) || '[]');
-    this.customTags = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TAGS) || JSON.stringify(CONFIG.DEFAULT_TAGS));
-    this.readingRecords = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.READING) || '[]');
+    try {
+      this.tasks = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TASKS) || '[]');
+      this.goals = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.GOALS) || '[]');
+      this.customTags = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TAGS) || JSON.stringify(CONFIG.DEFAULT_TAGS));
+      this.readingRecords = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.READING) || '[]');
+    } catch (error) {
+      console.error('localStorage 数据损坏，重置为默认值:', error);
+      this.tasks = [];
+      this.goals = [];
+      this.customTags = [...CONFIG.DEFAULT_TAGS];
+      this.readingRecords = [];
+      // 清除损坏的数据
+      this.clearAll();
+    }
+  }
+
+  // 清除所有数据
+  clearAll() {
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TASKS, '[]');
+      localStorage.setItem(CONFIG.STORAGE_KEYS.GOALS, '[]');
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TAGS, JSON.stringify(CONFIG.DEFAULT_TAGS));
+      localStorage.setItem(CONFIG.STORAGE_KEYS.READING, '[]');
+    } catch (error) {
+      console.error('清除数据失败:', error);
+    }
   }
 
   // 保存任务

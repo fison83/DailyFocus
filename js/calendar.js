@@ -26,7 +26,11 @@ class CalendarManager {
   updateToggleButton() {
     const btn = document.getElementById('calendarViewToggle');
     if (btn) {
-      btn.textContent = this.viewMode === 'due' ? '按截止日期' : '按创建日期';
+      // 显示当前模式，让用户知道可以切换到另一种模式
+      const currentModeText = this.viewMode === 'due' ? '当前：按截止日期' : '当前：按创建日期';
+      const switchModeText = this.viewMode === 'due' ? '切换：按创建日期' : '切换：按截止日期';
+      btn.textContent = currentModeText + ' | ' + switchModeText;
+      btn.title = switchModeText;
     }
   }
 

@@ -81,8 +81,13 @@ class ReadingManager {
   setupRatingStars() {
     const stars = document.querySelectorAll('.rating-star');
     stars.forEach(star => {
-      star.onclick = () => {
-        const rating = parseInt(star.dataset.rating);
+      // 移除旧的监听器（通过克隆节点）
+      const newStar = star.cloneNode(true);
+      star.parentNode.replaceChild(newStar, star);
+
+      // 添加新的监听器
+      newStar.onclick = () => {
+        const rating = parseInt(newStar.dataset.rating);
         document.getElementById('readingRating').value = rating;
         this.currentRating = rating;
         this.updateRatingStars(rating);
@@ -199,7 +204,12 @@ class ReadingManager {
     if (this.currentReadingId) {
       const index = this.storage.readingRecords.findIndex(r => r.id === this.currentReadingId);
       if (index !== -1) {
-        this.storage.readingRecords[index] = { ...this.storage.readingRecords[index], ...recordData };
+        // 保留原始的 createdAt
+        const { createdAt, ...dataWithoutCreatedAt } = recordData;
+        this.storage.readingRecords[index] = {
+          ...this.storage.readingRecords[index],
+          ...dataWithoutCreatedAt
+        };
       }
     } else {
       this.storage.readingRecords.unshift(recordData);
