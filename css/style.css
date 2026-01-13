@@ -362,6 +362,56 @@
       border-color: #FF9800;
     }
 
+    /* 快速添加截止日期选择器 */
+    .quick-due-date {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .due-date-select {
+      padding: 5px 12px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .due-date-select:hover {
+      border-color: var(--primary-green);
+    }
+
+    .due-date-select:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    .due-date-picker {
+      padding: 5px 12px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .due-date-picker:hover {
+      border-color: var(--primary-green);
+    }
+
+    .due-date-picker:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
     /* 内容区域 */
     .content-area {
       flex: 1;

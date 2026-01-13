@@ -184,9 +184,18 @@ class AllTasksManager {
 
   // 永久删除任务
   permanentDeleteTask(taskId) {
-    taskManager.permanentDeleteTask(taskId);
-    this.selectedTasks.delete(taskId);
-    this.render();
+    if (confirm('确定要永久删除这个任务吗？此操作不可撤销！')) {
+      const success = taskManager.permanentDeleteTask(taskId);
+      if (success) {
+        this.selectedTasks.delete(taskId);
+        // 先从 DOM 中移除，再重新渲染
+        const taskElement = document.querySelector(`.all-task-item[data-id="${taskId}"]`);
+        if (taskElement) {
+          taskElement.remove();
+        }
+        this.render();
+      }
+    }
   }
 
   // 打开任务详情
@@ -202,6 +211,12 @@ class AllTasksManager {
   setFilter(filter) {
     this.currentFilter = filter;
     this.selectedTasks.clear();
+
+    // 更新按钮高亮状态
+    document.querySelectorAll('.all-tasks-filters .filter-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+
     this.render();
   }
 

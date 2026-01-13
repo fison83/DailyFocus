@@ -12,13 +12,20 @@ class TaskManager {
   quickAdd(title) {
     if (!title.trim()) return false;
 
+    // 读取日期选择器
+    const dueDateSelect = document.getElementById('quickDueDate');
+    let dueDate = '';
+    if (dueDateSelect && dueDateSelect.value !== 'none') {
+      dueDate = this.calculateDueDate(dueDateSelect.value);
+    }
+
     const task = {
       id: Date.now().toString(),
       title: title.trim(),
       description: '',
       priority: this.lockedPriority,
       urgency: this.lockedUrgency,
-      dueDate: '',
+      dueDate: dueDate,
       tag: this.selectedTags[0] || '',
       completed: false,
       createdAt: new Date().toISOString(),
@@ -29,7 +36,50 @@ class TaskManager {
 
     this.storage.tasks.unshift(task);
     this.storage.saveTasks();
+
+    // 不重置日期选择器，保持用户选择方便连续输入
+
     return true;
+  }
+
+  // 计算截止日期
+  calculateDueDate(value) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    switch(value) {
+      case 'today':
+        return today.toISOString().split('T')[0];
+      case 'tomorrow':
+        today.setDate(today.getDate() + 1);
+        return today.toISOString().split('T')[0];
+      case 'thisSunday':
+        return this.getNextWeekday(today, 0);
+      case 'nextMonday':
+        return this.getNextWeekday(today, 1);
+      case 'nextWeek':
+        today.setDate(today.getDate() + 7);
+        return today.toISOString().split('T')[0];
+      case 'nextMonth':
+        today.setMonth(today.getMonth() + 1);
+        return today.toISOString().split('T')[0];
+      case 'custom':
+        const datePicker = document.getElementById('quickDueDatePicker');
+        return datePicker ? datePicker.value : '';
+      default:
+        return '';
+    }
+  }
+
+  // 获取下一个星期几
+  getNextWeekday(date, day) {
+    const currentDay = date.getDay();
+    let distance = day - currentDay;
+    if (distance <= 0) {
+      distance += 7;
+    }
+    date.setDate(date.getDate() + distance);
+    return date.toISOString().split('T')[0];
   }
 
   // 获取象限
@@ -165,6 +215,91 @@ class TaskManager {
       return true;
     }
     return false;
+  }
+
+  // 顺延任务截止日期
+  extendDueDate(taskId, days) {
+    const task = this.storage.tasks.find(t => t.id === taskId);
+    if (!task || !task.dueDate) return false;
+
+    // 1. 记录旧日期
+    const oldDate = task.dueDate;
+
+    // 2. 计算新日期
+    let newDate;
+    if (days === 0) {
+      // 顺延到今天
+      newDate = new Date();
+      const hour = newDate.getHours();
+
+      // 18点后顺延到明天
+      if (hour >= 18) {
+        newDate.setDate(newDate.getDate() + 1);
+      }
+    } else {
+      // 顺延N天
+      newDate = new Date(oldDate);
+      newDate.setDate(newDate.getDate() + days);
+    }
+
+    const newDateStr = newDate.toISOString().split('T')[0];
+
+    // 3. 检查是否已经顺延过到目标日期
+    if (task.dueDate === newDateStr) {
+      return false;  // 已经是目标日期，不重复顺延
+    }
+
+    // 4. 更新截止日期
+    task.dueDate = newDateStr;
+
+    // 5. 记录延期信息
+    if (!task.originalDueDate) {
+      task.originalDueDate = oldDate;
+    }
+    task.postponedCount = (task.postponedCount || 0) + 1;
+
+    // 6. 记录延期历史（最多5条）
+    if (!task.postponedHistory) {
+      task.postponedHistory = [];
+    }
+    task.postponedHistory.push({
+      from: oldDate,
+      to: newDateStr,
+      at: new Date().toISOString()
+    });
+
+    // 限制历史记录数量
+    if (task.postponedHistory.length > 5) {
+      task.postponedHistory.shift();
+    }
+
+    // 7. 保存
+    this.storage.saveTasks();
+
+    return true;
+  }
+
+  // 检测任务是否过期
+  isOverdue(task) {
+    if (!task.dueDate || task.completed) return false;
+
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const due = new Date(task.dueDate + 'T23:59:59');
+
+    return due < today;
+  }
+
+  // 获取过期天数
+  getOverdueDays(task) {
+    if (!this.isOverdue(task)) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(task.dueDate);
+
+    const diffDays = Math.floor((today - due) / (1000 * 60 * 60 * 24));
+    return diffDays;
   }
 
   // 渲染收集箱

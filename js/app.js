@@ -40,6 +40,19 @@ function toggleUrgency() {
   taskManager.toggleUrgency();
 }
 
+function toggleQuickDatePicker() {
+  const select = document.getElementById('quickDueDate');
+  const picker = document.getElementById('quickDueDatePicker');
+
+  if (select.value === 'custom') {
+    picker.style.display = 'block';
+    picker.focus();
+  } else {
+    picker.style.display = 'none';
+    picker.value = '';
+  }
+}
+
 function organizeInbox() {
   const count = taskManager.organizeInbox();
   taskManager.render();

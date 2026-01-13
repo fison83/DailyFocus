@@ -104,6 +104,19 @@
         <span class="priority-btn urgent" id="urgencyBtn" onclick="toggleUrgency()">🔥 紧急</span>
       </div>
       <div class="quick-tags" id="quickTags"></div>
+      <div class="quick-due-date">
+        <select class="due-date-select" id="quickDueDate" onchange="toggleQuickDatePicker()">
+          <option value="none">📅 无日期</option>
+          <option value="today">今天</option>
+          <option value="tomorrow">明天</option>
+          <option value="thisSunday">本周日</option>
+          <option value="nextMonday">下周一</option>
+          <option value="nextWeek">下周</option>
+          <option value="nextMonth">下月</option>
+          <option value="custom">自定义...</option>
+        </select>
+        <input type="date" class="due-date-picker" id="quickDueDatePicker" style="display: none;">
+      </div>
     </div>
 
     <!-- 内容区域 -->

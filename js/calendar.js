@@ -5,6 +5,19 @@ class CalendarManager {
     this.currentDate = new Date();
     this.currentMonth = this.currentDate.getMonth();
     this.currentYear = this.currentDate.getFullYear();
+    this.viewMode = 'due'; // 'due' 或 'created'
+    this.currentModal = null; // 当前弹窗引用
+  }
+
+  // 设置视图模式
+  setViewMode(mode) {
+    this.viewMode = mode;
+
+    // 更新按钮状态
+    document.getElementById('btnCalendarViewDue').classList.toggle('active', mode === 'due');
+    document.getElementById('btnCalendarViewCreated').classList.toggle('active', mode === 'created');
+
+    this.render();
   }
 
   // 渲染日历
@@ -64,14 +77,52 @@ class CalendarManager {
     for (let day = 1; day <= totalDays; day++) {
       const dateStr = `${this.currentYear}-${String(this.currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       const tasks = this.getTasksForDate(dateStr);
-      const hasTasks = tasks.length > 0;
-      const hasCompleted = tasks.filter(t => t.completed).length > 0;
+      const totalTasks = tasks.length;
+      const completedTasks = tasks.filter(t => t.completed).length;
+      const overdueTasks = tasks.filter(t => !t.completed && this.isOverdue(t));
+
+      const hasTasks = totalTasks > 0;
       const isToday = isCurrentMonth && day === today.getDate();
 
+      // 任务状态点（最多显示5个）
+      let dotsHtml = '';
+      if (totalTasks > 0) {
+        const maxDots = 5;
+        const showTasks = tasks.slice(0, maxDots);
+
+        dotsHtml = '<div class="calendar-dots">';
+        dotsHtml += showTasks.map(task => {
+          if (task.completed) {
+            return '<span class="task-dot completed"></span>';
+          } else if (this.isOverdue(task)) {
+            return '<span class="task-dot overdue"></span>';
+          } else {
+            return '<span class="task-dot pending"></span>';
+          }
+        }).join('');
+
+        if (totalTasks > maxDots) {
+          dotsHtml += `<span class="task-dot more">+${totalTasks - maxDots}</span>`;
+        }
+
+        dotsHtml += '</div>';
+      }
+
+      // 过期标记和完成率
+      let metaHtml = '';
+      if (overdueTasks.length > 0) {
+        metaHtml += `<span class="calendar-overdue-badge">⚠️ ${overdueTasks.length}</span>`;
+      }
+      if (totalTasks > 0) {
+        metaHtml += `<span class="calendar-completion">${completedTasks}/${totalTasks}</span>`;
+      }
+
       html += `
-        <div class="calendar-day ${isToday ? 'today' : ''} ${hasTasks ? 'has-tasks' : ''} ${hasCompleted ? 'has-completed' : ''}"
+        <div class="calendar-day ${isToday ? 'today' : ''} ${hasTasks ? 'has-tasks' : ''}"
              onclick="calendarManager.showDayTasks('${dateStr}')">
           <span class="calendar-day-number">${day}</span>
+          ${dotsHtml}
+          ${metaHtml}
         </div>
       `;
     }
@@ -82,14 +133,35 @@ class CalendarManager {
   // 获取指定日期的任务
   getTasksForDate(dateStr) {
     return this.storage.tasks.filter(t => {
-      if (!t.createdAt) return false;
-      const taskDate = t.createdAt.split('T')[0];
-      return taskDate === dateStr;
+      // 根据视图模式选择日期字段
+      if (this.viewMode === 'due') {
+        // 截止日期模式：只显示有截止日期的任务
+        if (!t.dueDate) return false;
+        return t.dueDate === dateStr;
+      } else {
+        // 创建日期模式：显示所有任务
+        if (!t.createdAt) return false;
+        return t.createdAt.split('T')[0] === dateStr;
+      }
     });
+  }
+
+  // 检测任务是否过期
+  isOverdue(task) {
+    if (!task.dueDate || task.completed) return false;
+
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const due = new Date(task.dueDate + 'T23:59:59');
+
+    return due < today;
   }
 
   // 显示某天的任务
   showDayTasks(dateStr) {
+    // 关闭已存在的弹窗
+    this.closeModal();
+
     const tasks = this.getTasksForDate(dateStr);
     const date = new Date(dateStr);
     const dateDisplay = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
@@ -99,27 +171,66 @@ class CalendarManager {
     modal.innerHTML = `
       <div class="calendar-modal-header">
         <h3>${dateDisplay} 的任务 (${tasks.length})</h3>
-        <button class="btn-close-modal" onclick="this.closest('.calendar-task-modal').remove()">×</button>
+        <button class="btn-close-modal" onclick="calendarManager.closeModal()">×</button>
       </div>
       <div class="calendar-modal-body">
         ${tasks.length === 0 ? '<p style="text-align: center; color: var(--text-light);">当天没有任务</p>' : ''}
-        ${tasks.map(task => `
-          <div class="calendar-task-item ${task.completed ? 'completed' : ''}">
-            <div class="calendar-task-title">${this.escapeHtml(task.title)}</div>
-            ${task.tag ? `<span class="task-tag" style="font-size: 10px;">${this.escapeHtml(task.tag)}</span>` : ''}
-          </div>
-        `).join('')}
+        ${tasks.map(task => {
+          const isOverdue = this.isOverdue(task);
+          const overdueDays = isOverdue ? taskManager.getOverdueDays(task) : 0;
+
+          return `
+            <div class="calendar-task-item ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}">
+              <div class="calendar-task-title">
+                ${this.escapeHtml(task.title)}
+                ${isOverdue ? `<span class="overdue-badge">⚠️ 过期${overdueDays}天</span>` : ''}
+              </div>
+              <div class="calendar-task-meta">
+                ${task.tag ? `<span class="task-tag">${this.escapeHtml(task.tag)}</span>` : ''}
+                ${task.dueDate ? `<span class="task-due-date">📅 ${task.dueDate}</span>` : ''}
+                ${task.postponedCount ? `<span class="postponed-badge">已延期${task.postponedCount}次</span>` : ''}
+              </div>
+              ${!task.completed && task.dueDate && isOverdue ? `
+                <div class="calendar-task-actions">
+                  <button class="btn-extend" onclick="event.stopPropagation(); calendarManager.handleTaskAction('${task.id}', 'extend', 0)">顺延到今天</button>
+                  <button class="btn-extend" onclick="event.stopPropagation(); calendarManager.handleTaskAction('${task.id}', 'extend', 7)">顺延+7天</button>
+                  <button class="btn-complete" onclick="event.stopPropagation(); calendarManager.handleTaskAction('${task.id}', 'complete')">完成</button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
       </div>
     `;
 
+    this.currentModal = modal;
     document.body.appendChild(modal);
 
     // 点击背景关闭
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
-        modal.remove();
+        this.closeModal();
       }
     });
+  }
+
+  // 关闭弹窗
+  closeModal() {
+    if (this.currentModal) {
+      this.currentModal.remove();
+      this.currentModal = null;
+    }
+  }
+
+  // 处理任务操作
+  handleTaskAction(taskId, action, param = null) {
+    if (action === 'extend') {
+      taskManager.extendDueDate(taskId, param);
+    } else if (action === 'complete') {
+      taskManager.toggleComplete(taskId);
+    }
+    this.render();
+    this.closeModal();
   }
 
   // 转义HTML

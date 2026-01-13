@@ -160,21 +160,23 @@ class UIManager {
       return;
     }
 
-    container.innerHTML = storage.customTags.map(tag => `
+    // "全部"选项
+    let html = `
+      <span class="tag-filter ${!allTasksManager.currentTag ? 'active' : ''}"
+            onclick="allTasksManager.setTagFilter('')">
+        全部
+      </span>
+    `;
+
+    // 各个标签选项
+    html += storage.customTags.map(tag => `
       <span class="tag-filter ${allTasksManager.currentTag === tag ? 'active' : ''}"
             onclick="allTasksManager.setTagFilter('${this.escapeHtml(tag)}')">
         ${this.escapeHtml(tag)}
       </span>
     `).join('');
 
-    // 添加"清除标签"按钮
-    if (allTasksManager.currentTag) {
-      container.innerHTML += `
-        <span class="tag-filter" onclick="allTasksManager.setTagFilter('')" style="color: #EF5350;">
-          ✕ 清除
-        </span>
-      `;
-    }
+    container.innerHTML = html;
   }
 
   // 显示添加标签输入
