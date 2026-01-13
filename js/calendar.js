@@ -12,17 +12,28 @@ class CalendarManager {
   // 设置视图模式
   setViewMode(mode) {
     this.viewMode = mode;
-
-    // 更新按钮状态
-    document.getElementById('btnCalendarViewDue').classList.toggle('active', mode === 'due');
-    document.getElementById('btnCalendarViewCreated').classList.toggle('active', mode === 'created');
-
     this.render();
+  }
+
+  // 切换视图模式
+  toggleViewMode() {
+    this.viewMode = this.viewMode === 'due' ? 'created' : 'due';
+    this.updateToggleButton();
+    this.render();
+  }
+
+  // 更新切换按钮文本
+  updateToggleButton() {
+    const btn = document.getElementById('calendarViewToggle');
+    if (btn) {
+      btn.textContent = this.viewMode === 'due' ? '按截止日期' : '按创建日期';
+    }
   }
 
   // 渲染日历
   render() {
     this.updateTitle();
+    this.updateToggleButton();
     this.renderDays();
   }
 

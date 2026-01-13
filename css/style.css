@@ -495,12 +495,40 @@
     }
 
     /* ========== 四象限 ========== */
+    .quadrant-filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .quadrant-filter-btn {
+      padding: 6px 14px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .quadrant-filter-btn:hover {
+      border-color: var(--primary-green);
+    }
+
+    .quadrant-filter-btn.active {
+      background: var(--primary-green);
+      color: white;
+      border-color: var(--primary-green);
+    }
+
     .quadrant-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       grid-template-rows: repeat(2, 1fr);
       gap: 16px;
-      height: calc(100vh - 200px);
+      height: calc(100vh - 260px);
       min-height: 400px;
     }
 
@@ -557,6 +585,43 @@
       flex: 1;
       padding: 12px;
       overflow-y: auto;
+    }
+
+    /* 四象限分页 */
+    .quadrant-pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 8px;
+    }
+
+    .quadrant-page-btn {
+      padding: 4px 10px;
+      background: var(--pale-green);
+      color: var(--dark-green);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .quadrant-page-btn:hover:not(:disabled) {
+      background: var(--light-green);
+      color: white;
+    }
+
+    .quadrant-page-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .quadrant-page-info {
+      font-size: 12px;
+      color: var(--text-secondary);
     }
 
     /* 任务项 */
@@ -634,6 +699,28 @@
       border-radius: 8px;
       font-size: 10px;
       font-weight: 500;
+    }
+
+    /* 收集箱任务删除按钮 */
+    .task-delete-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--text-light);
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .task-delete-btn:hover {
+      background: #FF5252;
+      color: white;
     }
 
     /* 任务卡片 */
@@ -803,6 +890,43 @@
 
     .btn-create-goal:hover {
       background: var(--dark-green);
+    }
+
+    /* 目标统计卡片 */
+    .goals-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .goal-stat-card {
+      flex: 1;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+
+    .goal-stat-card:hover {
+      border-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .goal-stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-green);
+      margin-bottom: 4px;
+    }
+
+    .goal-stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
     }
 
     .goals-section {
@@ -1907,8 +2031,11 @@
     .calendar-container {
       background: white;
       border-radius: var(--radius-lg);
-      padding: 20px;
+      padding: 16px;
       box-shadow: var(--shadow-md);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .calendar-header {
@@ -1939,6 +2066,23 @@
       color: var(--dark-green);
     }
 
+    .calendar-view-toggle {
+      padding: 6px 12px;
+      background: var(--pale-green);
+      color: var(--dark-green);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .calendar-view-toggle:hover {
+      background: var(--light-green);
+      color: white;
+    }
+
     .calendar-weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -1958,6 +2102,7 @@
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 8px;
+      flex: 1;
     }
 
     .calendar-day {

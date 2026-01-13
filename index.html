@@ -102,9 +102,6 @@
       <div class="priority-tags">
         <span class="priority-btn" id="priorityBtn" onclick="togglePriority()">⭐ 重要</span>
         <span class="priority-btn urgent" id="urgencyBtn" onclick="toggleUrgency()">🔥 紧急</span>
-      </div>
-      <div class="quick-tags" id="quickTags"></div>
-      <div class="quick-due-date">
         <select class="due-date-select" id="quickDueDate" onchange="toggleQuickDatePicker()">
           <option value="none">📅 无日期</option>
           <option value="today">今天</option>
@@ -117,6 +114,7 @@
         </select>
         <input type="date" class="due-date-picker" id="quickDueDatePicker" style="display: none;">
       </div>
+      <div class="quick-tags" id="quickTags"></div>
     </div>
 
     <!-- 内容区域 -->
@@ -140,6 +138,13 @@
 
       <!-- 四象限视图 -->
       <div class="view-container" id="quadrantView">
+        <div class="quadrant-filter-bar">
+          <button class="quadrant-filter-btn active" data-range="all" onclick="taskManager.setQuadrantTimeRange('all')">全部</button>
+          <button class="quadrant-filter-btn" data-range="today" onclick="taskManager.setQuadrantTimeRange('today')">今天</button>
+          <button class="quadrant-filter-btn" data-range="week" onclick="taskManager.setQuadrantTimeRange('week')">本周</button>
+          <button class="quadrant-filter-btn" data-range="month" onclick="taskManager.setQuadrantTimeRange('month')">本月</button>
+          <button class="quadrant-filter-btn" data-range="quarter" onclick="taskManager.setQuadrantTimeRange('quarter')">本季</button>
+        </div>
         <div class="quadrant-grid">
           <div class="quadrant">
             <div class="quadrant-header">
@@ -227,6 +232,7 @@
             <button class="calendar-nav-btn" onclick="calendarManager.prevMonth()">◀</button>
             <h2 class="calendar-title" id="calendarTitle">2025年1月</h2>
             <button class="calendar-nav-btn" onclick="calendarManager.nextMonth()">▶</button>
+            <button class="calendar-view-toggle" id="calendarViewToggle" onclick="calendarManager.toggleViewMode()">按截止日期</button>
           </div>
           <div class="calendar-weekdays">
             <div class="calendar-weekday">日</div>
@@ -290,6 +296,22 @@
           <div class="goals-header">
             <h2>🎯 我的目标</h2>
             <button class="btn-create-goal" onclick="createGoal()">+ 新建目标</button>
+          </div>
+
+          <!-- 统计卡片 -->
+          <div class="goals-stats">
+            <div class="goal-stat-card" onclick="goalManager.showAllGoals('active')">
+              <div class="goal-stat-value" id="goalStatActive">0</div>
+              <div class="goal-stat-label">进行中</div>
+            </div>
+            <div class="goal-stat-card" onclick="goalManager.showAllGoals('completed')">
+              <div class="goal-stat-value" id="goalStatCompleted">0</div>
+              <div class="goal-stat-label">已完成</div>
+            </div>
+            <div class="goal-stat-card" onclick="goalManager.showAllGoals('all')">
+              <div class="goal-stat-value" id="goalStatAll">0</div>
+              <div class="goal-stat-label">全部目标</div>
+            </div>
           </div>
 
           <div class="goals-section">

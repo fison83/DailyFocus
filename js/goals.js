@@ -41,8 +41,94 @@ class GoalManager {
     const activeGoals = this.storage.goals.filter(g => !g.completed);
     const completedGoals = this.storage.goals.filter(g => g.completed);
 
+    this.updateStats();
     this.renderGoalsGrid('activeGoalsGrid', activeGoals);
     this.renderGoalsGrid('completedGoalsGrid', completedGoals);
+  }
+
+  // 更新统计卡片
+  updateStats() {
+    const activeCount = this.storage.goals.filter(g => !g.completed).length;
+    const completedCount = this.storage.goals.filter(g => g.completed).length;
+    const allCount = this.storage.goals.length;
+
+    document.getElementById('goalStatActive').textContent = activeCount;
+    document.getElementById('goalStatCompleted').textContent = completedCount;
+    document.getElementById('goalStatAll').textContent = allCount;
+  }
+
+  // 显示所有目标弹窗
+  showAllGoals(filter) {
+    let goals = [];
+    let title = '';
+
+    switch (filter) {
+      case 'active':
+        goals = this.storage.goals.filter(g => !g.completed);
+        title = `进行中的目标 (${goals.length})`;
+        break;
+      case 'completed':
+        goals = this.storage.goals.filter(g => g.completed);
+        title = `已完成的目标 (${goals.length})`;
+        break;
+      case 'all':
+        goals = this.storage.goals;
+        title = `所有目标 (${goals.length})`;
+        break;
+    }
+
+    // 创建弹窗
+    const modal = document.createElement('div');
+    modal.className = 'task-list-modal';
+    modal.innerHTML = `
+      <div class="modal-overlay" onclick="goalManager.closeGoalsModal()"></div>
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h3>${title}</h3>
+          <button class="btn-close-modal" onclick="goalManager.closeGoalsModal()">×</button>
+        </div>
+        <div class="modal-body" style="max-height: 60vh; overflow-y: auto; padding: 16px;">
+          ${goals.length === 0 ? '<p style="text-align: center; color: var(--text-light);">暂无目标</p>' : ''}
+          ${goals.map(goal => {
+            const daysLeft = this.calculateDaysLeft(goal.dueDate);
+            return `
+              <div class="goal-card" style="margin-bottom: 12px;" onclick="goalManager.closeGoalsModal(); goalManager.openGoalPanel('${goal.id}'); ui.openGoalPanel();">
+                <div class="goal-card-header">
+                  <div>
+                    <div class="goal-card-title">${this.escapeHtml(goal.title)}</div>
+                    ${goal.description ? `<div class="goal-card-desc">${this.escapeHtml(goal.description)}</div>` : ''}
+                  </div>
+                  <span class="goal-card-status ${goal.completed ? 'completed' : 'active'}">
+                    ${goal.completed ? '已完成' : '进行中'}
+                  </span>
+                </div>
+                <div class="goal-card-meta">
+                  <div class="goal-card-countdown">
+                    <span>⏱️ 剩余 ${daysLeft} 天</span>
+                    <span>${goal.progress}%</span>
+                  </div>
+                  <div class="goal-card-progress">
+                    <div class="progress-bar-card">
+                      <div class="progress-fill" style="width: ${goal.progress}%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  // 关闭目标弹窗
+  closeGoalsModal() {
+    const modal = document.querySelector('.task-list-modal');
+    if (modal) {
+      modal.remove();
+    }
   }
 
   renderGoalsGrid(containerId, goalsList) {

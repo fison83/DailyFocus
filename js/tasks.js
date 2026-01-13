@@ -6,6 +6,8 @@ class TaskManager {
     this.selectedTags = [];
     this.lockedPriority = false;
     this.lockedUrgency = false;
+    this.quadrantTimeRange = 'all'; // 四象限时间范围筛选
+    this.quadrantPage = 1; // 四象限分页（每象限每页9个任务）
   }
 
   // 快速添加任务
@@ -172,14 +174,74 @@ class TaskManager {
       'normal': []
     };
 
-    this.storage.tasks
-      .filter(t => !t.deleted && t.organized && !t.completed)
-      .forEach(task => {
-        const quadrant = this.getQuadrant(task);
-        quadrantTasks[quadrant].push(task);
-      });
+    // 获取时间范围筛选的任务
+    let tasks = this.storage.tasks.filter(t => !t.deleted && t.organized && !t.completed);
+
+    // 应用时间范围筛选
+    tasks = tasks.filter(task => this.isTaskInTimeRange(task));
+
+    // 按截止日期排序（有截止日期的优先）
+    tasks.sort((a, b) => {
+      if (a.dueDate && !b.dueDate) return -1;
+      if (!a.dueDate && b.dueDate) return 1;
+      if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    tasks.forEach(task => {
+      const quadrant = this.getQuadrant(task);
+      quadrantTasks[quadrant].push(task);
+    });
 
     return quadrantTasks;
+  }
+
+  // 检查任务是否在时间范围内
+  isTaskInTimeRange(task) {
+    if (this.quadrantTimeRange === 'all') return true;
+
+    const taskDate = new Date(task.dueDate || task.createdAt);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    switch (this.quadrantTimeRange) {
+      case 'today':
+        return taskDate.toDateString() === today.toDateString();
+
+      case 'week':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        return taskDate >= weekStart && taskDate <= weekEnd;
+
+      case 'month':
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        return taskDate >= monthStart && taskDate <= monthEnd;
+
+      case 'quarter':
+        const quarter = Math.floor(now.getMonth() / 3);
+        const quarterStart = new Date(now.getFullYear(), quarter * 3, 1);
+        const quarterEnd = new Date(now.getFullYear(), quarter * 3 + 3, 0);
+        return taskDate >= quarterStart && taskDate <= quarterEnd;
+
+      default:
+        return true;
+    }
+  }
+
+  // 设置四象限时间范围
+  setQuadrantTimeRange(range) {
+    this.quadrantTimeRange = range;
+    this.quadrantPage = 1; // 重置分页
+
+    // 更新按钮高亮
+    document.querySelectorAll('.quadrant-filter-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.range === range);
+    });
+
+    this.render();
   }
 
   // 软删除任务(移到回收站)
@@ -312,15 +374,16 @@ class TaskManager {
       list.innerHTML = '<div class="empty-state"><div class="empty-icon">📝</div><p>收集箱空了，去添加一些任务吧！</p></div>';
     } else {
       list.innerHTML = inboxTasks.map(task => `
-        <div class="task-item" onclick="taskManager.openEditPanel('${task.id}'); ui.openEditPanel();">
+        <div class="task-item">
           <div class="task-checkbox" onclick="event.stopPropagation(); taskManager.toggleComplete('${task.id}'); taskManager.render();"></div>
-          <div class="task-content">
+          <div class="task-content" onclick="taskManager.openEditPanel('${task.id}'); ui.openEditPanel();">
             <div class="task-title">${this.escapeHtml(task.title)}</div>
             <div class="task-meta">
               ${task.tag ? `<span class="task-tag">${this.escapeHtml(task.tag)}</span>` : ''}
               ${task.dueDate ? `<span>📅 ${task.dueDate}</span>` : ''}
             </div>
           </div>
+          <button class="task-delete-btn" onclick="event.stopPropagation(); taskManager.permanentDeleteTask('${task.id}')" title="永久删除">×</button>
         </div>
       `).join('');
     }
@@ -329,17 +392,23 @@ class TaskManager {
   // 渲染四象限
   renderQuadrants() {
     const quadrantTasks = this.getQuadrantTasks();
+    const tasksPerPage = 9;
 
     Object.entries(quadrantTasks).forEach(([key, qTasks]) => {
       const container = document.getElementById(`q-${key}`);
       const countEl = document.getElementById(`count-${key}`);
 
-      countEl.textContent = qTasks.length;
+      const totalPages = Math.ceil(qTasks.length / tasksPerPage);
+      const currentPage = Math.min(this.quadrantPage, totalPages || 1);
+      const startIndex = (currentPage - 1) * tasksPerPage;
+      const pageTasks = qTasks.slice(startIndex, startIndex + tasksPerPage);
+
+      countEl.textContent = `${qTasks.length}`;
 
       if (qTasks.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>暂无任务</p></div>';
       } else {
-        container.innerHTML = qTasks.map(task => `
+        container.innerHTML = pageTasks.map(task => `
           <div class="task-card" onclick="taskManager.openEditPanel('${task.id}'); ui.openEditPanel();">
             <div class="task-card-header">
               <div class="task-checkbox" onclick="event.stopPropagation(); taskManager.toggleComplete('${task.id}'); taskManager.render();"></div>
@@ -354,8 +423,32 @@ class TaskManager {
             </div>
           </div>
         `).join('');
+
+        // 添加分页控制
+        if (totalPages > 1) {
+          container.innerHTML += `
+            <div class="quadrant-pagination">
+              <button class="quadrant-page-btn" onclick="event.stopPropagation(); taskManager.changeQuadrantPage(-1)" ${currentPage === 1 ? 'disabled' : ''}>◀</button>
+              <span class="quadrant-page-info">${currentPage}/${totalPages}</span>
+              <button class="quadrant-page-btn" onclick="event.stopPropagation(); taskManager.changeQuadrantPage(1)" ${currentPage === totalPages ? 'disabled' : ''}>▶</button>
+            </div>
+          `;
+        }
       }
     });
+  }
+
+  // 切换四象限分页
+  changeQuadrantPage(delta) {
+    const quadrantTasks = this.getQuadrantTasks();
+    const tasksPerPage = 9;
+    const maxPages = Math.max(...Object.values(quadrantTasks).map(tasks => Math.ceil(tasks.length / tasksPerPage)));
+
+    const newPage = this.quadrantPage + delta;
+    if (newPage >= 1 && newPage <= maxPages) {
+      this.quadrantPage = newPage;
+      this.renderQuadrants();
+    }
   }
 
   // 渲染所有
