@@ -103,13 +103,19 @@ class CalendarManager {
 
         dotsHtml = '<div class="calendar-dots">';
         dotsHtml += showTasks.map(task => {
-          if (task.completed) {
-            return '<span class="task-dot completed"></span>';
-          } else if (this.isOverdue(task)) {
-            return '<span class="task-dot overdue"></span>';
-          } else {
-            return '<span class="task-dot pending"></span>';
-          }
+          // 根据四象限确定圆点颜色
+          const quadrant = taskManager.getQuadrant(task);
+          let dotClass = 'task-dot';
+
+          if (quadrant === 'urgent-important') dotClass += ' urgent-important';
+          else if (quadrant === 'urgent') dotClass += ' urgent';
+          else if (quadrant === 'important') dotClass += ' important';
+          else dotClass += ' normal';
+
+          // 已完成任务添加 completed 类
+          if (task.completed) dotClass += ' completed';
+
+          return `<span class="${dotClass}"></span>`;
         }).join('');
 
         if (totalTasks > maxDots) {

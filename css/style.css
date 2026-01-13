@@ -2103,10 +2103,11 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 8px;
       flex: 1;
+      overflow: hidden;
     }
 
     .calendar-day {
-      aspect-ratio: 1;
+      min-height: 70px;
       padding: 8px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-color);
@@ -2153,6 +2154,68 @@
       height: 6px;
       background: var(--light-green);
       border-radius: 50%;
+    }
+
+    /* 任务点容器 */
+    .calendar-dots {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    /* 任务点 */
+    .task-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .task-dot.urgent-important {
+      background: #EF5350;
+    }
+
+    .task-dot.urgent {
+      background: #FF9800;
+    }
+
+    .task-dot.important {
+      background: #4CAF50;
+    }
+
+    .task-dot.normal {
+      background: #2196F3;
+    }
+
+    .task-dot.more {
+      background: #BDBDBD;
+      font-size: 8px;
+      color: #666;
+      width: auto;
+      min-width: 14px;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    /* 完成标记 */
+    .task-dot.completed {
+      position: relative;
+    }
+
+    .task-dot.completed::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 6px;
+      color: white;
+      font-weight: bold;
     }
 
     .calendar-day-number {
