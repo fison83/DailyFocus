@@ -8,7 +8,16 @@ const CONFIG = {
     TASKS: 'dailyfocus-tasks',
     GOALS: 'dailyfocus-goals',
     TAGS: 'dailyfocus-tags',
-    READING: 'dailyfocus-reading'
+    READING: 'dailyfocus-reading',
+    CLOUD_BIN_ID: 'dailyfocus-cloud-bin-id', // 存储 JSONbin 的 bin ID
+    LAST_SYNC_TIME: 'dailyfocus-last-sync-time' // 最后同步时间
+  },
+
+  // 云同步配置
+  CLOUD_SYNC: {
+    API_URL: 'https://api.jsonbin.io/v3',
+    DEFAULT_KEY: '$2a$10$demo', // 默认密钥，用户可在设置中替换
+    RATE_LIMIT: 1000 // 请求间隔限制（毫秒）
   },
 
   // 默认标签

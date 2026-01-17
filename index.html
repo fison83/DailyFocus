@@ -80,6 +80,7 @@
           </div>
         </div>
         <div class="goal-actions">
+          <button class="btn-banner" onclick="showCloudSyncPanel()">☁️ 云同步</button>
           <button class="btn-banner" onclick="exportData()">📤 导出</button>
           <button class="btn-banner" onclick="importData()">📥 导入</button>
         </div>
@@ -640,6 +641,68 @@
       <button class="btn-delete" id="btnDeleteReading" onclick="deleteReading()" style="display: none;">删除</button>
       <button class="btn-cancel" onclick="closeReadingPanel()">取消</button>
       <button class="btn-save" onclick="saveReadingRecord()">保存</button>
+    </div>
+  </div>
+
+  <!-- 云同步弹窗 -->
+  <div class="edit-panel" id="cloudSyncPanel" style="max-width: 500px;">
+    <div class="edit-header">
+      <h2>☁️ 云同步</h2>
+      <button class="btn-close-panel" onclick="closeCloudSyncPanel()">×</button>
+    </div>
+    <div class="edit-body">
+      <!-- API 密钥设置 -->
+      <div class="form-group full">
+        <label class="form-label">JSONbin.io API 密钥</label>
+        <input type="text" class="form-input" id="cloudApiKey" placeholder="输入你的 API 密钥">
+        <small style="color: var(--text-light);">
+          获取方式：<a href="https://jsonbin.io/login" target="_blank">注册 JSONbin.io</a> → 创建 API Key
+        </small>
+      </div>
+
+      <!-- Bin ID -->
+      <div class="form-group full">
+        <label class="form-label">当前数据 ID</label>
+        <input type="text" class="form-input" id="cloudBinId" placeholder="首次上传后自动生成" readonly>
+        <small style="color: var(--text-light);">保存此 ID，在其他设备上输入即可同步</small>
+      </div>
+
+      <!-- 同步状态 -->
+      <div class="sync-status" id="syncStatus">
+        <div class="sync-info">
+          <span class="sync-label">最后同步：</span>
+          <span id="lastSyncTime">未同步</span>
+        </div>
+      </div>
+
+      <!-- 同步操作 -->
+      <div class="sync-actions">
+        <button class="btn-sync-upload" onclick="uploadToCloud()" id="btnUpload">
+          <span class="sync-icon">📤</span>
+          <span class="sync-text">上传到云端</span>
+        </button>
+        <button class="btn-sync-download" onclick="downloadFromCloud()" id="btnDownload">
+          <span class="sync-icon">📥</span>
+          <span class="sync-text">从云端下载</span>
+        </button>
+      </div>
+
+      <!-- 同步消息 -->
+      <div class="sync-message" id="syncMessage" style="display: none;"></div>
+
+      <!-- 使用说明 -->
+      <div class="sync-help">
+        <h4>使用说明：</h4>
+        <ol>
+          <li>在 JSONbin.io 注册并获取免费的 API 密钥</li>
+          <li>将密钥粘贴到上方输入框</li>
+          <li>点击"上传到云端"保存数据</li>
+          <li>在其他设备上输入相同的 API 密钥和 Bin ID 即可同步</li>
+        </ol>
+      </div>
+    </div>
+    <div class="edit-footer">
+      <button class="btn-save" onclick="closeCloudSyncPanel()">关闭</button>
     </div>
   </div>
 

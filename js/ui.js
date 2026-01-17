@@ -386,4 +386,148 @@ class UIManager {
     div.textContent = text;
     return div.innerHTML;
   }
+
+  // ========== 云同步 UI 方法 ==========
+
+  // 打开云同步面板
+  openCloudSyncPanel() {
+    const panel = document.getElementById('cloudSyncPanel');
+    panel.classList.add('active');
+
+    // 加载当前设置
+    document.getElementById('cloudApiKey').value = storage.getApiKey();
+    document.getElementById('cloudBinId').value = storage.getBinId() || '';
+
+    // 更新最后同步时间
+    this.updateLastSyncTime();
+  }
+
+  // 关闭云同步面板
+  closeCloudSyncPanel() {
+    const panel = document.getElementById('cloudSyncPanel');
+    panel.classList.remove('active');
+
+    // 保存 API 密钥
+    const apiKey = document.getElementById('cloudApiKey').value.trim();
+    if (apiKey) {
+      storage.setApiKey(apiKey);
+    }
+  }
+
+  // 更新最后同步时间显示
+  updateLastSyncTime() {
+    const lastSync = storage.getLastSyncTime();
+    const timeEl = document.getElementById('lastSyncTime');
+
+    if (lastSync) {
+      const now = new Date();
+      const diff = now - lastSync;
+
+      if (diff < 60000) {
+        timeEl.textContent = '刚刚';
+      } else if (diff < 3600000) {
+        timeEl.textContent = `${Math.floor(diff / 60000)} 分钟前`;
+      } else if (diff < 86400000) {
+        timeEl.textContent = `${Math.floor(diff / 3600000)} 小时前`;
+      } else {
+        timeEl.textContent = lastSync.toLocaleString('zh-CN');
+      }
+    } else {
+      timeEl.textContent = '未同步';
+    }
+  }
+
+  // 显示同步消息
+  showSyncMessage(message, isSuccess = true) {
+    const msgEl = document.getElementById('syncMessage');
+    msgEl.textContent = message;
+    msgEl.className = 'sync-message ' + (isSuccess ? 'success' : 'error');
+    msgEl.style.display = 'block';
+
+    // 3秒后自动隐藏
+    setTimeout(() => {
+      msgEl.style.display = 'none';
+    }, 3000);
+  }
+
+  // 设置按钮加载状态
+  setSyncButtonLoading(buttonId, loading) {
+    const btn = document.getElementById(buttonId);
+    if (loading) {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.querySelector('.sync-text').textContent;
+      btn.querySelector('.sync-text').textContent = '处理中...';
+    } else {
+      btn.disabled = false;
+      btn.querySelector('.sync-text').textContent = btn.dataset.originalText || '同步';
+    }
+  }
+
+  // 上传到云端
+  async uploadToCloud() {
+    const apiKey = document.getElementById('cloudApiKey').value.trim();
+
+    if (!apiKey || apiKey === CONFIG.CLOUD_SYNC.DEFAULT_KEY) {
+      this.showSyncMessage('请先输入有效的 API 密钥', false);
+      return;
+    }
+
+    this.setSyncButtonLoading('btnUpload', true);
+
+    const result = await storage.uploadToCloud();
+
+    this.setSyncButtonLoading('btnUpload', false);
+
+    if (result.success) {
+      // 更新 Bin ID 显示
+      document.getElementById('cloudBinId').value = result.binId || storage.getBinId();
+      this.updateLastSyncTime();
+      this.showSyncMessage(result.message + ' (Bin ID: ' + result.binId + ')', true);
+    } else {
+      this.showSyncMessage(result.message, false);
+    }
+  }
+
+  // 从云端下载
+  async downloadFromCloud() {
+    const apiKey = document.getElementById('cloudApiKey').value.trim();
+    const binId = document.getElementById('cloudBinId').value.trim();
+
+    if (!apiKey || apiKey === CONFIG.CLOUD_SYNC.DEFAULT_KEY) {
+      this.showSyncMessage('请先输入有效的 API 密钥', false);
+      return;
+    }
+
+    if (!binId) {
+      this.showSyncMessage('请输入要下载的 Bin ID', false);
+      return;
+    }
+
+    // 确认下载
+    if (!confirm('下载云端数据将覆盖本地数据，确定继续吗？')) {
+      return;
+    }
+
+    this.setSyncButtonLoading('btnDownload', true);
+
+    const result = await storage.downloadFromCloud(binId);
+
+    this.setSyncButtonLoading('btnDownload', false);
+
+    if (result.success) {
+      this.updateLastSyncTime();
+      this.showSyncMessage(
+        `${result.message} (任务: ${result.taskCount}, 目标: ${result.goalCount}, 阅读: ${result.readingCount})`,
+        true
+      );
+
+      // 刷新所有视图
+      this.taskManager.render();
+      this.goalManager.render();
+      this.readingManager.render();
+      this.statsManager.render();
+    } else {
+      this.showSyncMessage(result.message, false);
+    }
+  }
 }

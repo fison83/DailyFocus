@@ -177,5 +177,21 @@ function handleImportFile(event) {
   ui.handleImportFile(event);
 }
 
+function showCloudSyncPanel() {
+  ui.openCloudSyncPanel();
+}
+
+function closeCloudSyncPanel() {
+  ui.closeCloudSyncPanel();
+}
+
+async function uploadToCloud() {
+  await ui.uploadToCloud();
+}
+
+async function downloadFromCloud() {
+  await ui.downloadFromCloud();
+}
+
 // 启动应用
 document.addEventListener('DOMContentLoaded', init);
