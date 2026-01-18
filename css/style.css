@@ -1562,42 +1562,6 @@
       .quadrant {
         min-height: 300px;
       }
-    }
-
-    /* ========== 移动端优化 ========== */
-
-    /* 平板设备 (≤768px) */
-    @media (max-width: 768px) {
-      /* 四象限改为单列 */
-      .quadrant-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(4, 1fr);
-        gap: 12px;
-      }
-
-      .quadrant {
-        min-height: 200px;
-      }
-
-      /* 目标卡片网格 */
-      .goals-grid {
-        grid-template-columns: 1fr;
-      }
-
-      /* 阅读记录网格 */
-      .reading-grid {
-        grid-template-columns: 1fr;
-      }
-
-      /* 编辑面板单列 */
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      /* 统计卡片 */
-      .stat-cards {
-        grid-template-columns: 1fr;
-      }
 
       /* ========== 移动端顶部导航 ========== */
       .mobile-bottom-nav {
@@ -1652,6 +1616,42 @@
       /* 调整编辑面板层级 */
       .edit-panel {
         z-index: 101;
+      }
+    }
+
+    /* ========== 移动端优化 ========== */
+
+    /* 平板设备 (≤768px) */
+    @media (max-width: 768px) {
+      /* 四象限改为单列 */
+      .quadrant-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .quadrant {
+        min-height: 200px;
+      }
+
+      /* 目标卡片网格 */
+      .goals-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 阅读记录网格 */
+      .reading-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 编辑面板单列 */
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 统计卡片 */
+      .stat-cards {
+        grid-template-columns: 1fr;
       }
     }
 
