@@ -40,7 +40,11 @@ function init() {
   // 在页面上显示调试信息
   const debugEl = document.getElementById('debugInfo');
   if (debugEl) {
-    debugEl.textContent = `屏幕宽度: ${width}px | 移动端: ${width <= 768 ? '是' : '否'}`;
+    debugEl.innerHTML = `
+      屏幕宽度: ${width}px<br>
+      移动端(≤1024px): ${width <= 1024 ? '✅ 是' : '❌ 否'}<br>
+      侧边栏状态: ${document.querySelector('.sidebar') ? '❌ 仍存在' : '✅ 已隐藏'}
+    `;
   }
 
   // 设置移动端底部导航事件
