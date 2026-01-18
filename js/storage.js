@@ -151,7 +151,8 @@ class Storage {
 
     console.log('[云同步] 开始上传');
     console.log('[云同步] Token 长度:', token ? token.length : 0);
-    console.log('[云同步] Gist ID:', gistId);
+    console.log('[云同步] Token 前缀:', token ? token.substring(0, 7) + '...' : '无');
+    console.log('[云同步] Gist ID:', gistId || '无（首次上传）');
 
     const data = {
       version: CONFIG.VERSION,
@@ -240,6 +241,10 @@ class Storage {
 
     const token = this.getApiKey();
 
+    console.log('[云同步下载] Token 长度:', token ? token.length : 0);
+    console.log('[云同步下载] Token 前缀:', token ? token.substring(0, 7) + '...' : '无');
+    console.log('[云同步下载] Gist ID:', gistId);
+
     try {
       if (!gistId) {
         return {
@@ -256,10 +261,14 @@ class Storage {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      console.log('[云同步下载] 发送请求到:', `${CONFIG.CLOUD_SYNC.GITHUB_API}/gists/${gistId}`);
+
       const response = await fetch(`${CONFIG.CLOUD_SYNC.GITHUB_API}/gists/${gistId}`, {
         method: 'GET',
         headers: headers
       });
+
+      console.log('[云同步下载] 响应状态:', response.status);
 
       if (!response.ok) {
         let errorMsg = `下载失败: ${response.status}`;
