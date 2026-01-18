@@ -82,7 +82,10 @@
         <div class="goal-actions">
           <button class="btn-banner" onclick="showCloudSyncPanel()">☁️ 云同步</button>
           <button class="btn-banner" onclick="exportData()">📤 导出</button>
-          <button class="btn-banner" onclick="importData()">📥 导入</button>
+          <label class="btn-banner" style="cursor: pointer;">
+            📥 导入
+            <input type="file" accept=".json" style="display: none;" onchange="handleImportFile(event)">
+          </label>
         </div>
       </div>
     </div>
@@ -723,9 +726,6 @@
       <button class="btn-save" onclick="closeCloudSyncPanel()">关闭</button>
     </div>
   </div>
-
-  <!-- 隐藏的文件输入 -->
-  <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleImportFile(event)">
 
   <!-- 加载JavaScript模块 -->
   <script src="js/config.js"></script>

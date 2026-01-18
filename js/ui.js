@@ -338,9 +338,9 @@ class UIManager {
     storage.exportData();
   }
 
-  // 导入数据
+  // 导入数据（已废弃 - 现在使用 label 直接绑定 input）
   importData() {
-    document.getElementById('importFileInput').click();
+    // 不再需要，文件选择器已经通过 label 绑定
   }
 
   // 处理导入文件

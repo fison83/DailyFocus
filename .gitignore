@@ -28,6 +28,7 @@ src/
 
 # 发布包
 release/
+release-deploy/
 *.tar.gz
 *.zip
 
