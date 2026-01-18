@@ -1564,6 +1564,258 @@
       }
     }
 
+    /* ========== 移动端优化 ========== */
+
+    /* 平板设备 (≤768px) */
+    @media (max-width: 768px) {
+      /* 四象限改为单列 */
+      .quadrant-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .quadrant {
+        min-height: 200px;
+      }
+
+      /* 目标卡片网格 */
+      .goals-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 阅读记录网格 */
+      .reading-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 编辑面板单列 */
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* 统计卡片 */
+      .stat-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 手机设备 (≤480px) */
+    @media (max-width: 480px) {
+      /* ========== 按钮优化 ========== */
+      .btn-banner {
+        padding: 10px 16px;
+        font-size: 12px;
+        min-height: 44px;
+      }
+
+      .priority-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+        min-height: 40px;
+      }
+
+      .filter-btn,
+      .quadrant-filter-btn {
+        padding: 8px 16px;
+        min-height: 40px;
+      }
+
+      .btn-add {
+        padding: 12px 20px;
+        min-height: 44px;
+      }
+
+      .btn-save,
+      .btn-cancel,
+      .btn-delete {
+        padding: 10px 20px;
+        min-height: 44px;
+      }
+
+      /* ========== 输入框优化 ========== */
+      .form-input,
+      .form-textarea,
+      .form-select {
+        padding: 12px 14px;
+        font-size: 14px;
+        min-height: 44px;
+      }
+
+      .quick-add-input {
+        padding: 12px 14px;
+        font-size: 14px;
+        min-height: 44px;
+      }
+
+      .search-input {
+        padding: 12px 14px;
+        font-size: 14px;
+        min-height: 44px;
+      }
+
+      /* ========== 内容区内边距 ========== */
+      .content-area {
+        padding: 16px;
+      }
+
+      .quick-add-bar {
+        padding: 12px 16px;
+      }
+
+      /* ========== 编辑面板 ========== */
+      .edit-panel {
+        padding: 16px 20px;
+        border-radius: 16px 16px 0 0;
+        max-height: 85vh;
+      }
+
+      .edit-header {
+        padding: 16px 20px;
+      }
+
+      .edit-footer {
+        padding: 12px 20px;
+      }
+
+      /* ========== 任务卡片 ========== */
+      .task-item {
+        padding: 12px;
+      }
+
+      /* ========== 目标横幅 ========== */
+      .goal-banner-content {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .goal-actions {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .goal-actions .btn-banner {
+        flex: 1;
+      }
+
+      /* ========== 卡片间距 ========== */
+      .goals-grid,
+      .reading-grid {
+        gap: 12px;
+      }
+
+      /* ========== 表单间距 ========== */
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      /* ========== 字体大小优化 ========== */
+      .logo-text p {
+        font-size: 12px;
+      }
+
+      .task-title {
+        font-size: 14px;
+      }
+
+      .form-label {
+        font-size: 13px;
+      }
+
+      /* ========== 触摸反馈 ========== */
+      button,
+      .task-item,
+      .goal-card,
+      .reading-card {
+        -webkit-tap-highlight-color: rgba(76, 175, 80, 0.2);
+      }
+
+      button:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+      }
+
+      /* ========== 四象限优化 ========== */
+      .quadrant {
+        min-height: 180px;
+        padding: 12px;
+      }
+
+      .quadrant-header {
+        font-size: 14px;
+      }
+
+      /* ========== 云同步面板 ========== */
+      .sync-help {
+        font-size: 12px;
+      }
+
+      .sync-help h4 {
+        font-size: 13px;
+      }
+
+      .sync-help ol {
+        padding-left: 18px;
+      }
+
+      /* ========== 移动端底部导航 ========== */
+      .mobile-bottom-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid var(--border-color);
+        padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+        z-index: 100;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        background: none;
+        border: none;
+        padding: 4px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .nav-btn.active {
+        color: var(--primary-green);
+      }
+
+      .nav-icon {
+        font-size: 20px;
+      }
+
+      .nav-label {
+        font-size: 10px;
+      }
+
+      /* 隐藏侧边栏 */
+      .sidebar {
+        display: none !important;
+      }
+
+      /* 调整主内容区，为底部导航留空间 */
+      .main-wrapper {
+        padding-bottom: 60px;
+      }
+
+      /* 调整编辑面板层级 */
+      .edit-panel {
+        z-index: 101;
+      }
+    }
+
     /* ========== V5 新增样式 ========== */
     
     /* 统计弹窗 */

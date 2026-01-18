@@ -31,6 +31,35 @@ function init() {
 
   // 自动下载云端数据（如果开启了自动同步）
   storage.autoDownload();
+
+  // 设置移动端底部导航事件
+  setupMobileBottomNav();
+}
+
+// 设置移动端底部导航
+function setupMobileBottomNav() {
+  // 底部导航点击事件
+  document.querySelectorAll('.mobile-bottom-nav .nav-btn[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      ui.switchView(btn.dataset.view);
+    });
+  });
+
+  // 保存原始 switchView 方法
+  const originalSwitchView = ui.switchView;
+
+  // 重写 switchView 方法以同步底部导航状态
+  ui.switchView = function(view) {
+    // 调用原始方法
+    originalSwitchView.call(this, view);
+
+    // 更新底部导航激活状态
+    document.querySelectorAll('.mobile-bottom-nav .nav-btn').forEach(btn => {
+      if (btn.dataset.view) {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      }
+    });
+  };
 }
 
 // 全局函数（供HTML调用）

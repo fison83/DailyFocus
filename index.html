@@ -745,6 +745,30 @@
     </div>
   </div>
 
+  <!-- 移动端底部导航 -->
+  <div class="mobile-bottom-nav" style="display: none;">
+    <button class="nav-btn active" data-view="inbox">
+      <span class="nav-icon">📥</span>
+      <span class="nav-label">收集箱</span>
+    </button>
+    <button class="nav-btn" data-view="quadrant">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">四象限</span>
+    </button>
+    <button class="nav-btn" data-view="calendar">
+      <span class="nav-icon">📅</span>
+      <span class="nav-label">日历</span>
+    </button>
+    <button class="nav-btn" data-view="goals">
+      <span class="nav-icon">🎯</span>
+      <span class="nav-label">目标</span>
+    </button>
+    <button class="nav-btn" onclick="showCloudSyncPanel()">
+      <span class="nav-icon">☁️</span>
+      <span class="nav-label">同步</span>
+    </button>
+  </div>
+
   <!-- 加载JavaScript模块 -->
   <script src="js/config.js"></script>
   <script src="js/storage.js"></script>
