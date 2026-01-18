@@ -32,21 +32,6 @@ function init() {
   // 自动下载云端数据（如果开启了自动同步）
   storage.autoDownload();
 
-  // 调试：显示屏幕宽度
-  const width = window.innerWidth;
-  console.log('[调试] 屏幕宽度:', width);
-  console.log('[调试] 是否显示移动导航:', width <= 768);
-
-  // 在页面上显示调试信息
-  const debugEl = document.getElementById('debugInfo');
-  if (debugEl) {
-    debugEl.innerHTML = `
-      屏幕宽度: ${width}px<br>
-      移动端(≤1024px): ${width <= 1024 ? '✅ 是' : '❌ 否'}<br>
-      侧边栏状态: ${document.querySelector('.sidebar') ? '❌ 仍存在' : '✅ 已隐藏'}
-    `;
-  }
-
   // 设置移动端底部导航事件
   setupMobileBottomNav();
 }
