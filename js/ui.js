@@ -445,7 +445,12 @@ class UIManager {
 
   // 上传到云端
   async uploadToCloud() {
-    const apiKey = document.getElementById('cloudApiKey').value.trim();
+    let apiKey = document.getElementById('cloudApiKey').value.trim();
+
+    // 优先使用已保存的 Token
+    if (!apiKey) {
+      apiKey = storage.getApiKey();
+    }
 
     if (!apiKey) {
       this.showSyncMessage('请先输入有效的 GitHub Token', false);
@@ -454,6 +459,9 @@ class UIManager {
 
     // 保存 Token 到 localStorage
     storage.setApiKey(apiKey);
+
+    // 更新输入框显示
+    document.getElementById('cloudApiKey').value = apiKey;
 
     this.setSyncButtonLoading('btnUpload', true);
 
@@ -473,8 +481,13 @@ class UIManager {
 
   // 从云端下载
   async downloadFromCloud() {
-    const apiKey = document.getElementById('cloudApiKey').value.trim();
+    let apiKey = document.getElementById('cloudApiKey').value.trim();
     const binId = document.getElementById('cloudBinId').value.trim();
+
+    // 优先使用已保存的 Token
+    if (!apiKey) {
+      apiKey = storage.getApiKey();
+    }
 
     if (!apiKey) {
       this.showSyncMessage('请先输入有效的 GitHub Token', false);
@@ -488,6 +501,9 @@ class UIManager {
 
     // 保存 Token 到 localStorage
     storage.setApiKey(apiKey);
+
+    // 更新输入框显示
+    document.getElementById('cloudApiKey').value = apiKey;
 
     // 确认下载
     if (!confirm('下载云端数据将覆盖本地数据，确定继续吗？')) {
