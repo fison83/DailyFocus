@@ -467,10 +467,13 @@ class UIManager {
   async uploadToCloud() {
     const apiKey = document.getElementById('cloudApiKey').value.trim();
 
-    if (!apiKey || apiKey === CONFIG.CLOUD_SYNC.DEFAULT_KEY) {
-      this.showSyncMessage('请先输入有效的 API 密钥', false);
+    if (!apiKey) {
+      this.showSyncMessage('请先输入有效的 GitHub Token', false);
       return;
     }
+
+    // 保存 Token 到 localStorage
+    storage.setApiKey(apiKey);
 
     this.setSyncButtonLoading('btnUpload', true);
 
@@ -479,10 +482,10 @@ class UIManager {
     this.setSyncButtonLoading('btnUpload', false);
 
     if (result.success) {
-      // 更新 Bin ID 显示
+      // 更新 Gist ID 显示
       document.getElementById('cloudBinId').value = result.binId || storage.getBinId();
       this.updateLastSyncTime();
-      this.showSyncMessage(result.message + ' (Bin ID: ' + result.binId + ')', true);
+      this.showSyncMessage(result.message + ' (Gist ID: ' + result.binId + ')', true);
     } else {
       this.showSyncMessage(result.message, false);
     }
@@ -493,15 +496,18 @@ class UIManager {
     const apiKey = document.getElementById('cloudApiKey').value.trim();
     const binId = document.getElementById('cloudBinId').value.trim();
 
-    if (!apiKey || apiKey === CONFIG.CLOUD_SYNC.DEFAULT_KEY) {
-      this.showSyncMessage('请先输入有效的 API 密钥', false);
+    if (!apiKey) {
+      this.showSyncMessage('请先输入有效的 GitHub Token', false);
       return;
     }
 
     if (!binId) {
-      this.showSyncMessage('请输入要下载的 Bin ID', false);
+      this.showSyncMessage('请输入要下载的 Gist ID', false);
       return;
     }
+
+    // 保存 Token 到 localStorage
+    storage.setApiKey(apiKey);
 
     // 确认下载
     if (!confirm('下载云端数据将覆盖本地数据，确定继续吗？')) {

@@ -138,6 +138,10 @@ class Storage {
     const token = this.getApiKey();
     const gistId = this.getBinId();
 
+    console.log('[云同步] 开始上传');
+    console.log('[云同步] Token 长度:', token ? token.length : 0);
+    console.log('[云同步] Gist ID:', gistId);
+
     const data = {
       version: CONFIG.VERSION,
       updatedAt: new Date().toISOString(),
@@ -160,41 +164,41 @@ class Storage {
         }
       };
 
-      if (gistId) {
-        // 更新已有的 Gist
-        response = await fetch(`${CONFIG.CLOUD_SYNC.GITHUB_API}/gists/${gistId}`, {
-          method: 'PATCH',
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(gistData)
-        });
-      } else {
-        // 创建新 Gist
-        response = await fetch(`${CONFIG.CLOUD_SYNC.GITHUB_API}/gists`, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(gistData)
-        });
-      }
+      const url = gistId
+        ? `${CONFIG.CLOUD_SYNC.GITHUB_API}/gists/${gistId}`
+        : `${CONFIG.CLOUD_SYNC.GITHUB_API}/gists`;
+
+      console.log('[云同步] 请求 URL:', url);
+      console.log('[云同步] 请求方法:', gistId ? 'PATCH' : 'POST');
+
+      response = await fetch(url, {
+        method: gistId ? 'PATCH' : 'POST',
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(gistData)
+      });
+
+      console.log('[云同步] 响应状态:', response.status);
 
       if (!response.ok) {
-        let errorMsg = `上传失败: ${response.status}`;
+        let errorMsg = `上传失败 (${response.status})`;
         try {
           const errorData = await response.json();
+          console.error('[云同步] API 错误详情:', errorData);
           if (errorData.message) {
             errorMsg = errorData.message;
           }
-          console.error('GitHub API 错误:', errorData);
-        } catch (e) {}
+        } catch (e) {
+          console.error('[云同步] 无法解析错误响应');
+        }
         throw new Error(errorMsg);
       }
 
       const result = await response.json();
+      console.log('[云同步] 上传成功, Gist ID:', result.id);
 
       // 保存 Gist ID
       if (result.id) {
@@ -210,10 +214,10 @@ class Storage {
         message: gistId ? '更新成功' : '上传成功'
       };
     } catch (error) {
-      console.error('云同步上传失败:', error);
+      console.error('[云同步] 上传失败:', error);
       return {
         success: false,
-        message: `上传失败: ${error.message}`
+        message: error.message
       };
     }
   }

@@ -25,3 +25,11 @@ web-version.html
 快速启动指南.md
 src/
 安装并运行.bat
+
+# 发布包
+release/
+*.tar.gz
+*.zip
+
+# 临时文件
+tmpclaude-*/
