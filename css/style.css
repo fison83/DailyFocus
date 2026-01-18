@@ -1526,6 +1526,11 @@
         display: none !important;
       }
 
+      /* 隐藏调试条 */
+      #debugInfo {
+        display: none !important;
+      }
+
       body {
         flex-direction: column;
         height: auto;
