@@ -398,6 +398,9 @@ class UIManager {
     document.getElementById('cloudApiKey').value = storage.getApiKey();
     document.getElementById('cloudBinId').value = storage.getBinId() || '';
 
+    // 初始化自动同步开关
+    this.initAutoSyncToggle();
+
     // 更新最后同步时间
     this.updateLastSyncTime();
   }
@@ -411,29 +414,6 @@ class UIManager {
     const apiKey = document.getElementById('cloudApiKey').value.trim();
     if (apiKey) {
       storage.setApiKey(apiKey);
-    }
-  }
-
-  // 更新最后同步时间显示
-  updateLastSyncTime() {
-    const lastSync = storage.getLastSyncTime();
-    const timeEl = document.getElementById('lastSyncTime');
-
-    if (lastSync) {
-      const now = new Date();
-      const diff = now - lastSync;
-
-      if (diff < 60000) {
-        timeEl.textContent = '刚刚';
-      } else if (diff < 3600000) {
-        timeEl.textContent = `${Math.floor(diff / 60000)} 分钟前`;
-      } else if (diff < 86400000) {
-        timeEl.textContent = `${Math.floor(diff / 3600000)} 小时前`;
-      } else {
-        timeEl.textContent = lastSync.toLocaleString('zh-CN');
-      }
-    } else {
-      timeEl.textContent = '未同步';
     }
   }
 
@@ -534,6 +514,87 @@ class UIManager {
       this.statsManager.render();
     } else {
       this.showSyncMessage(result.message, false);
+    }
+  }
+
+  // ========== 自动同步功能 ==========
+
+  // 切换自动同步开关
+  toggleAutoSync() {
+    const toggle = document.getElementById('autoSyncToggle');
+    const enabled = toggle.checked;
+
+    storage.setAutoSyncEnabled(enabled);
+
+    if (enabled) {
+      // 开启自动同步
+      this.showSyncMessage('自动同步已开启', true);
+
+      // 如果已配置 Token 和 Gist ID，立即执行一次上传
+      if (storage.getApiKey() && storage.getBinId()) {
+        storage.autoUpload();
+      }
+    } else {
+      // 关闭自动同步
+      this.showSyncMessage('自动同步已关闭', true);
+    }
+  }
+
+  // 初始化自动同步开关状态
+  initAutoSyncToggle() {
+    const toggle = document.getElementById('autoSyncToggle');
+    if (toggle) {
+      toggle.checked = storage.getAutoSyncEnabled();
+    }
+  }
+
+  // 监听自动同步完成事件
+  setupAutoSyncListener() {
+    window.addEventListener('autoSyncComplete', (e) => {
+      const { type, success, message, data } = e.detail;
+
+      if (success) {
+        if (type === 'upload') {
+          console.log('[自动同步] 自动上传成功');
+          // 更新最后同步时间
+          this.updateLastSyncTime();
+        } else if (type === 'download') {
+          console.log('[自动同步] 自动下载成功');
+          // 刷新所有视图
+          this.taskManager.render();
+          this.goalManager.render();
+          this.readingManager.render();
+          this.statsManager.render();
+          // 更新最后同步时间
+          this.updateLastSyncTime();
+        }
+      } else {
+        console.error('[自动同步]', type === 'upload' ? '上传' : '下载', '失败:', message);
+      }
+    });
+  }
+
+  // 更新最后同步时间显示
+  updateLastSyncTime() {
+    const lastTime = storage.getLastSyncTime();
+    const timeEl = document.getElementById('lastSyncTime');
+
+    if (!lastTime) {
+      timeEl.textContent = '未同步';
+      return;
+    }
+
+    const now = new Date();
+    const diff = Math.floor((now - lastTime) / 1000);
+
+    if (diff < 60) {
+      timeEl.textContent = '刚刚';
+    } else if (diff < 3600) {
+      timeEl.textContent = Math.floor(diff / 60) + ' 分钟前';
+    } else if (diff < 86400) {
+      timeEl.textContent = Math.floor(diff / 3600) + ' 小时前';
+    } else {
+      timeEl.textContent = lastTime.toLocaleDateString('zh-CN');
     }
   }
 }

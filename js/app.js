@@ -17,6 +17,9 @@ function init() {
   // 设置事件监听
   ui.setupEventListeners();
 
+  // 设置自动同步监听器
+  ui.setupAutoSyncListener();
+
   // 初始化UI
   ui.updateDate();
   ui.renderQuickTags();
@@ -25,6 +28,9 @@ function init() {
   taskManager.render();
   statsManager.update();
   goalManager.updateBanner();
+
+  // 自动下载云端数据（如果开启了自动同步）
+  storage.autoDownload();
 }
 
 // 全局函数（供HTML调用）
@@ -191,6 +197,10 @@ async function uploadToCloud() {
 
 async function downloadFromCloud() {
   await ui.downloadFromCloud();
+}
+
+function toggleAutoSync() {
+  ui.toggleAutoSync();
 }
 
 // 启动应用

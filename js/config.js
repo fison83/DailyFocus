@@ -19,7 +19,9 @@ const CONFIG = {
     GITHUB_API: 'https://api.github.com',
     GIST_FILENAME: 'dailyfocus-data.json',
     DEFAULT_KEY: '', // GitHub Token 或 JSONbin Key
-    RATE_LIMIT: 1000 // 请求间隔限制（毫秒）
+    RATE_LIMIT: 1000, // 请求间隔限制（毫秒）
+    AUTO_SYNC: false, // 自动同步开关（默认关闭）
+    AUTO_SYNC_INTERVAL: 5000 // 自动同步防抖间隔（毫秒）
   },
 
   // 默认标签

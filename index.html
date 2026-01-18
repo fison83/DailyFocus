@@ -675,6 +675,20 @@
         </div>
       </div>
 
+      <!-- 自动同步开关 -->
+      <div class="form-group full" style="margin-top: 15px;">
+        <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+          <span>自动同步</span>
+          <label class="switch">
+            <input type="checkbox" id="autoSyncToggle" onchange="toggleAutoSync()">
+            <span class="slider"></span>
+          </label>
+        </label>
+        <small style="color: var(--text-light); display: block; margin-top: 5px;">
+          开启后，每次修改数据会自动上传到云端，打开页面会自动下载
+        </small>
+      </div>
+
       <!-- 同步操作 -->
       <div class="sync-actions">
         <button class="btn-sync-upload" onclick="uploadToCloud()" id="btnUpload">

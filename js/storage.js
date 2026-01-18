@@ -32,21 +32,29 @@ class Storage {
   // 保存任务
   saveTasks() {
     localStorage.setItem(CONFIG.STORAGE_KEYS.TASKS, JSON.stringify(this.tasks));
+    // 触发自动上传
+    this.autoUpload();
   }
 
   // 保存目标
   saveGoals() {
     localStorage.setItem(CONFIG.STORAGE_KEYS.GOALS, JSON.stringify(this.goals));
+    // 触发自动上传
+    this.autoUpload();
   }
 
   // 保存标签
   saveTags() {
     localStorage.setItem(CONFIG.STORAGE_KEYS.TAGS, JSON.stringify(this.customTags));
+    // 触发自动上传
+    this.autoUpload();
   }
 
   // 保存阅读记录
   saveReading() {
     localStorage.setItem(CONFIG.STORAGE_KEYS.READING, JSON.stringify(this.readingRecords));
+    // 触发自动上传
+    this.autoUpload();
   }
 
   // 导出数据 - V5: 文件名添加时间戳
@@ -318,6 +326,89 @@ class Storage {
   getLastSyncTime() {
     const time = localStorage.getItem(CONFIG.STORAGE_KEYS.LAST_SYNC_TIME);
     return time ? new Date(time) : null;
+  }
+
+  // ========== 自动同步功能 ==========
+
+  // 获取自动同步开关状态
+  getAutoSyncEnabled() {
+    const enabled = localStorage.getItem('dailyfocus-auto-sync');
+    return enabled === 'true';
+  }
+
+  // 设置自动同步开关
+  setAutoSyncEnabled(enabled) {
+    localStorage.setItem('dailyfocus-auto-sync', enabled ? 'true' : 'false');
+  }
+
+  // 自动上传（带防抖）
+  autoSyncTimer = null;
+  autoUpload() {
+    // 如果自动同步未开启，直接返回
+    if (!this.getAutoSyncEnabled()) {
+      return;
+    }
+
+    // 如果没有配置 Token 或 Gist ID，不自动上传
+    if (!this.getApiKey() || !this.getBinId()) {
+      return;
+    }
+
+    // 清除之前的定时器
+    if (this.autoSyncTimer) {
+      clearTimeout(this.autoSyncTimer);
+    }
+
+    // 设置新的定时器（防抖）
+    this.autoSyncTimer = setTimeout(async () => {
+      const result = await this.uploadToCloud();
+      if (result.success) {
+        console.log('[自动同步] 上传成功');
+        // 触发自定义事件，通知 UI 更新
+        window.dispatchEvent(new CustomEvent('autoSyncComplete', {
+          detail: { type: 'upload', success: true }
+        }));
+      } else {
+        console.error('[自动同步] 上传失败:', result.message);
+        window.dispatchEvent(new CustomEvent('autoSyncComplete', {
+          detail: { type: 'upload', success: false, message: result.message }
+        }));
+      }
+    }, CONFIG.CLOUD_SYNC.AUTO_SYNC_INTERVAL);
+  }
+
+  // 自动下载（页面打开时调用）
+  async autoDownload() {
+    // 如果自动同步未开启，直接返回
+    if (!this.getAutoSyncEnabled()) {
+      return { success: false, message: '自动同步未开启' };
+    }
+
+    // 如果没有配置 Token 或 Gist ID，不自动下载
+    const token = this.getApiKey();
+    const gistId = this.getBinId();
+
+    if (!token || !gistId) {
+      return { success: false, message: '未配置 Token 或 Gist ID' };
+    }
+
+    console.log('[自动同步] 开始下载');
+    const result = await this.downloadFromCloud(gistId);
+
+    if (result.success) {
+      console.log('[自动同步] 下载成功');
+      // 触发自定义事件，通知 UI 更新
+      window.dispatchEvent(new CustomEvent('autoSyncComplete', {
+        detail: { type: 'download', success: true, data: result }
+      }));
+    } else {
+      console.error('[自动同步] 下载失败:', result.message);
+      window.dispatchEvent(new CustomEvent('autoSyncComplete', {
+        detail: { type: 'download', success: false, message: result.message }
+      }));
+    }
+
+    return result;
   }
 }
 
