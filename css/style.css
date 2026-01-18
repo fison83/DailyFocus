@@ -1521,46 +1521,15 @@
 
     /* 响应式 */
     @media (max-width: 1024px) {
+      /* 隐藏侧边栏（包括 logo 和导航）*/
+      .sidebar {
+        display: none !important;
+      }
+
       body {
         flex-direction: column;
         height: auto;
         overflow: auto;
-      }
-
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        align-items: center;
-        padding: 12px 16px;
-      }
-
-      .sidebar-logo {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-        margin-right: 16px;
-      }
-
-      .sidebar-nav {
-        flex-direction: row;
-        overflow-x: auto;
-      }
-
-      .nav-item {
-        white-space: nowrap;
-      }
-
-      .sidebar-footer {
-        display: none;
-      }
-
-      .quadrant-grid {
-        height: auto;
-        grid-template-rows: auto;
-      }
-
-      .quadrant {
-        min-height: 300px;
       }
 
       /* ========== 移动端顶部导航 ========== */
@@ -1603,11 +1572,6 @@
         font-size: 10px;
       }
 
-      /* 隐藏侧边栏 */
-      .sidebar {
-        display: none !important;
-      }
-
       /* 调整主内容区，为顶部导航留空间 */
       .main-wrapper {
         padding-top: 60px;
@@ -1616,6 +1580,15 @@
       /* 调整编辑面板层级 */
       .edit-panel {
         z-index: 101;
+      }
+
+      .quadrant-grid {
+        height: auto;
+        grid-template-rows: auto;
+      }
+
+      .quadrant {
+        min-height: 300px;
       }
     }
 
