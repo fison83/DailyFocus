@@ -1,6 +1,9 @@
 // 数据存储模块
 class Storage {
   constructor() {
+    // 防止自动上传在下载过程中被触发
+    this.isDownloading = false;
+
     try {
       this.tasks = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TASKS) || '[]');
       this.goals = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.GOALS) || '[]');
@@ -232,11 +235,15 @@ class Storage {
 
   // 从 GitHub Gist 下载数据
   async downloadFromCloud(gistId) {
+    // 设置下载标志，防止自动上传被触发
+    this.isDownloading = true;
+
     const token = this.getApiKey();
 
-    if (!gistId) {
-      return {
-        success: false,
+    try {
+      if (!gistId) {
+        return {
+          success: false,
         message: '请先上传数据或输入 Gist ID'
       };
     }
@@ -319,6 +326,9 @@ class Storage {
         success: false,
         message: error.message
       };
+    } finally {
+      // 重置下载标志，允许自动上传
+      this.isDownloading = false;
     }
   }
 
@@ -344,6 +354,11 @@ class Storage {
   // 自动上传（带防抖）
   autoSyncTimer = null;
   autoUpload() {
+    // 如果正在下载，不触发自动上传（避免循环）
+    if (this.isDownloading) {
+      return;
+    }
+
     // 如果自动同步未开启，直接返回
     if (!this.getAutoSyncEnabled()) {
       return;

@@ -579,6 +579,11 @@ class UIManager {
     const lastTime = storage.getLastSyncTime();
     const timeEl = document.getElementById('lastSyncTime');
 
+    // 检查元素是否存在
+    if (!timeEl) {
+      return;
+    }
+
     if (!lastTime) {
       timeEl.textContent = '未同步';
       return;
