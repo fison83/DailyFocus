@@ -123,20 +123,20 @@ class Storage {
     localStorage.setItem('dailyfocus-api-key', key);
   }
 
-  // 获取当前 bin ID
+  // 获取当前 Gist ID
   getBinId() {
     return localStorage.getItem(CONFIG.STORAGE_KEYS.CLOUD_BIN_ID);
   }
 
-  // 保存 bin ID
-  saveBinId(binId) {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.CLOUD_BIN_ID, binId);
+  // 保存 Gist ID
+  saveBinId(gistId) {
+    localStorage.setItem(CONFIG.STORAGE_KEYS.CLOUD_BIN_ID, gistId);
   }
 
-  // 上传数据到云端
+  // 上传数据到 GitHub Gist
   async uploadToCloud() {
-    const apiKey = this.getApiKey();
-    const binId = this.getBinId();
+    const token = this.getApiKey();
+    const gistId = this.getBinId();
 
     const data = {
       version: CONFIG.VERSION,
@@ -149,38 +149,56 @@ class Storage {
 
     try {
       let response;
-      if (binId) {
-        // 更新已有的 bin
-        response = await fetch(`${CONFIG.CLOUD_SYNC.API_URL}/b/${binId}`, {
-          method: 'PUT',
+      const filename = CONFIG.CLOUD_SYNC.GIST_FILENAME;
+      const gistData = {
+        description: `DailyFocus 数据备份 - ${new Date().toLocaleString('zh-CN')}`,
+        public: false,
+        files: {
+          [filename]: {
+            content: JSON.stringify(data, null, 2)
+          }
+        }
+      };
+
+      if (gistId) {
+        // 更新已有的 Gist
+        response = await fetch(`${CONFIG.CLOUD_SYNC.GITHUB_API}/gists/${gistId}`, {
+          method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': apiKey
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(gistData)
         });
       } else {
-        // 创建新 bin
-        response = await fetch(`${CONFIG.CLOUD_SYNC.API_URL}/b`, {
+        // 创建新 Gist
+        response = await fetch(`${CONFIG.CLOUD_SYNC.GITHUB_API}/gists`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'X-Master-Key': apiKey,
-            'X-Bin-Name': `dailyfocus-backup-${Date.now()}`
+            'Accept': 'application/vnd.github.v3+json',
+            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(gistData)
         });
       }
 
       if (!response.ok) {
-        throw new Error(`上传失败: ${response.status}`);
+        let errorMsg = `上传失败: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMsg = errorData.message;
+          }
+          console.error('GitHub API 错误:', errorData);
+        } catch (e) {}
+        throw new Error(errorMsg);
       }
 
       const result = await response.json();
 
-      // 保存 bin ID
-      if (result.metadata.id) {
-        this.saveBinId(result.metadata.id);
+      // 保存 Gist ID
+      if (result.id) {
+        this.saveBinId(result.id);
       }
 
       // 更新同步时间
@@ -188,8 +206,8 @@ class Storage {
 
       return {
         success: true,
-        binId: result.metadata.id,
-        message: binId ? '更新成功' : '上传成功'
+        binId: result.id,
+        message: gistId ? '更新成功' : '上传成功'
       };
     } catch (error) {
       console.error('云同步上传失败:', error);
@@ -200,44 +218,65 @@ class Storage {
     }
   }
 
-  // 从云端下载数据
-  async downloadFromCloud(binId) {
-    const apiKey = this.getApiKey();
+  // 从 GitHub Gist 下载数据
+  async downloadFromCloud(gistId) {
+    const token = this.getApiKey();
 
-    if (!binId) {
+    if (!gistId) {
       return {
         success: false,
-        message: '请先上传数据或输入 bin ID'
+        message: '请先上传数据或输入 Gist ID'
       };
     }
 
     try {
-      const response = await fetch(`${CONFIG.CLOUD_SYNC.API_URL}/b/${binId}/latest`, {
+      const headers = {
+        'Accept': 'application/vnd.github.v3+json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${CONFIG.CLOUD_SYNC.GITHUB_API}/gists/${gistId}`, {
         method: 'GET',
-        headers: {
-          'X-Master-Key': apiKey
-        }
+        headers: headers
       });
 
       if (!response.ok) {
-        if (response.status === 404) {
-          throw new Error('数据不存在或 bin ID 错误');
-        } else if (response.status === 401) {
-          throw new Error('API 密钥无效，请检查设置');
-        } else {
-          throw new Error(`下载失败: ${response.status}`);
+        let errorMsg = `下载失败: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMsg = errorData.message;
+          }
+          console.error('GitHub API 错误:', errorData);
+        } catch (e) {
+          if (response.status === 404) {
+            errorMsg = 'Gist 不存在或 ID 错误';
+          } else if (response.status === 401) {
+            errorMsg = 'Token 无效，请检查设置';
+          }
         }
+        throw new Error(errorMsg);
       }
 
       const result = await response.json();
-      const data = result.record;
+      const filename = CONFIG.CLOUD_SYNC.GIST_FILENAME;
+
+      // 获取文件内容
+      if (!result.files || !result.files[filename]) {
+        throw new Error('Gist 中找不到数据文件');
+      }
+
+      const fileContent = result.files[filename].content;
+      const data = JSON.parse(fileContent);
 
       // 验证数据格式
       if (!data.version || !data.tasks) {
         throw new Error('云端数据格式无效');
       }
 
-      // 合并数据（保留本地的 createdAt）
+      // 合并数据
       this.tasks = data.tasks || [];
       this.goals = data.goals || [];
       this.customTags = data.customTags || CONFIG.DEFAULT_TAGS;
@@ -248,8 +287,8 @@ class Storage {
       this.saveTags();
       this.saveReading();
 
-      // 保存 bin ID
-      this.saveBinId(binId);
+      // 保存 Gist ID
+      this.saveBinId(gistId);
 
       // 更新同步时间
       localStorage.setItem(CONFIG.STORAGE_KEYS.LAST_SYNC_TIME, new Date().toISOString());

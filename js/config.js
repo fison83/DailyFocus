@@ -15,8 +15,10 @@ const CONFIG = {
 
   // 云同步配置
   CLOUD_SYNC: {
-    API_URL: 'https://api.jsonbin.io/v3',
-    DEFAULT_KEY: '$2a$10$demo', // 默认密钥，用户可在设置中替换
+    PROVIDER: 'github', // 'github' 或 'jsonbin'
+    GITHUB_API: 'https://api.github.com',
+    GIST_FILENAME: 'dailyfocus-data.json',
+    DEFAULT_KEY: '', // GitHub Token 或 JSONbin Key
     RATE_LIMIT: 1000 // 请求间隔限制（毫秒）
   },
 
