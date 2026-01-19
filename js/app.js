@@ -33,17 +33,7 @@ function init() {
   storage.autoDownload();
 
   // 设置移动端底部导航事件
-  setupMobileBottomNav();
-}
-
-// 设置移动端底部导航
-function setupMobileBottomNav() {
-  // 等待 DOM 加载完成后再绑定事件
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindMobileNavEvents);
-  } else {
-    bindMobileNavEvents();
-  }
+  // setupMobileBottomNav(); // 已移到 DOMContentLoaded 中调用
 }
 
 // 绑定移动端导航事件
@@ -248,4 +238,10 @@ function toggleAutoSync() {
 }
 
 // 启动应用
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  // 延迟绑定移动端导航事件，确保 DOM 完全加载
+  setTimeout(() => {
+    bindMobileNavEvents();
+  }, 100);
+});
