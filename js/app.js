@@ -38,10 +38,23 @@ function init() {
 
 // 设置移动端底部导航
 function setupMobileBottomNav() {
+  // 等待 DOM 加载完成后再绑定事件
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindMobileNavEvents);
+  } else {
+    bindMobileNavEvents();
+  }
+}
+
+// 绑定移动端导航事件
+function bindMobileNavEvents() {
   // 底部导航点击事件
   document.querySelectorAll('.mobile-bottom-nav .nav-btn[data-view]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      ui.switchView(btn.dataset.view);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const view = btn.getAttribute('data-view');
+      console.log('[移动导航] 点击切换到:', view);
+      ui.switchView(view);
     });
   });
 
@@ -50,13 +63,15 @@ function setupMobileBottomNav() {
 
   // 重写 switchView 方法以同步底部导航状态
   ui.switchView = function(view) {
+    console.log('[移动导航] switchView 调用:', view);
     // 调用原始方法
     originalSwitchView.call(this, view);
 
     // 更新底部导航激活状态
     document.querySelectorAll('.mobile-bottom-nav .nav-btn').forEach(btn => {
-      if (btn.dataset.view) {
-        btn.classList.toggle('active', btn.dataset.view === view);
+      const btnView = btn.getAttribute('data-view');
+      if (btnView) {
+        btn.classList.toggle('active', btnView === view);
       }
     });
   };
