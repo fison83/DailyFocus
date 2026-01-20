@@ -21,18 +21,29 @@ class GoalManager {
   updateBanner() {
     const activeGoal = this.storage.goals.find(g => !g.completed) || this.storage.goals[0];
 
+    const titleEl = document.getElementById('bannerGoalTitle');
+    const daysEl = document.getElementById('bannerDaysLeft');
+    const progressEl = document.getElementById('bannerProgress');
+    const progressTextEl = document.getElementById('bannerProgressText');
+
+    // 检查元素是否存在
+    if (!titleEl || !daysEl || !progressEl || !progressTextEl) {
+      console.warn('[目标横幅] DOM 元素未找到，跳过更新');
+      return;
+    }
+
     if (activeGoal) {
       const daysLeft = this.calculateDaysLeft(activeGoal.dueDate);
 
-      document.getElementById('bannerGoalTitle').textContent = activeGoal.title;
-      document.getElementById('bannerDaysLeft').textContent = daysLeft;
-      document.getElementById('bannerProgress').style.width = activeGoal.progress + '%';
-      document.getElementById('bannerProgressText').textContent = activeGoal.progress + '%';
+      titleEl.textContent = activeGoal.title;
+      daysEl.textContent = daysLeft;
+      progressEl.style.width = activeGoal.progress + '%';
+      progressTextEl.textContent = activeGoal.progress + '%';
     } else {
-      document.getElementById('bannerGoalTitle').textContent = '暂无目标，点击创建一个吧！';
-      document.getElementById('bannerDaysLeft').textContent = '--';
-      document.getElementById('bannerProgress').style.width = '0%';
-      document.getElementById('bannerProgressText').textContent = '0%';
+      titleEl.textContent = '暂无目标，点击创建一个吧！';
+      daysEl.textContent = '--';
+      progressEl.style.width = '0%';
+      progressTextEl.textContent = '0%';
     }
   }
 
