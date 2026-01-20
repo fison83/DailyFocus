@@ -38,33 +38,52 @@ function init() {
 
 // 绑定移动端导航事件
 function bindMobileNavEvents() {
+  console.log('[移动导航] 开始绑定事件');
+
   // 底部导航点击事件
-  document.querySelectorAll('.mobile-bottom-nav .nav-btn[data-view]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  const navBtns = document.querySelectorAll('.mobile-bottom-nav .nav-btn[data-view]');
+  console.log('[移动导航] 找到导航按钮数量:', navBtns.length);
+
+  navBtns.forEach((btn, index) => {
+    const view = btn.getAttribute('data-view');
+    console.log(`[移动导航] 按钮 ${index}: view=${view}`);
+
+    // 使用 onclick 方式绑定事件
+    btn.onclick = function(e) {
       e.preventDefault();
-      const view = btn.getAttribute('data-view');
-      console.log('[移动导航] 点击切换到:', view);
-      ui.switchView(view);
-    });
+      e.stopPropagation();
+      console.log('[移动导航] 点击按钮, view=', view);
+
+      // 调用视图切换
+      if (ui && ui.switchView) {
+        ui.switchView(view);
+      } else {
+        console.error('[移动导航] ui 或 ui.switchView 未定义');
+      }
+    };
   });
 
   // 保存原始 switchView 方法
   const originalSwitchView = ui.switchView;
 
   // 重写 switchView 方法以同步底部导航状态
-  ui.switchView = function(view) {
-    console.log('[移动导航] switchView 调用:', view);
-    // 调用原始方法
-    originalSwitchView.call(this, view);
+  if (originalSwitchView) {
+    ui.switchView = function(view) {
+      console.log('[移动导航] switchView 调用:', view);
+      // 调用原始方法
+      originalSwitchView.call(this, view);
 
-    // 更新底部导航激活状态
-    document.querySelectorAll('.mobile-bottom-nav .nav-btn').forEach(btn => {
-      const btnView = btn.getAttribute('data-view');
-      if (btnView) {
-        btn.classList.toggle('active', btnView === view);
-      }
-    });
-  };
+      // 更新底部导航激活状态
+      document.querySelectorAll('.mobile-bottom-nav .nav-btn').forEach(btn => {
+        const btnView = btn.getAttribute('data-view');
+        if (btnView) {
+          btn.classList.toggle('active', btnView === view);
+        }
+      });
+    };
+  } else {
+    console.error('[移动导航] ui.switchView 未定义');
+  }
 }
 
 // 全局函数（供HTML调用）
