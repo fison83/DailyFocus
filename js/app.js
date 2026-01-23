@@ -38,27 +38,29 @@ function init() {
 
 // 绑定移动端导航事件
 function bindMobileNavEvents() {
-  console.log('[移动导航] 开始绑定事件');
+  // 只在移动端（屏幕宽度 ≤ 1024px）才执行
+  if (window.innerWidth > 1024) {
+    return; // 电脑端不执行，不影响原有导航
+  }
 
   // 底部导航点击事件
   const navBtns = document.querySelectorAll('.mobile-bottom-nav .nav-btn[data-view]');
-  console.log('[移动导航] 找到导航按钮数量:', navBtns.length);
 
-  navBtns.forEach((btn, index) => {
+  if (navBtns.length === 0) {
+    return; // 没有找到移动端导航按钮，直接返回
+  }
+
+  navBtns.forEach((btn) => {
     const view = btn.getAttribute('data-view');
-    console.log(`[移动导航] 按钮 ${index}: view=${view}`);
 
     // 使用 onclick 方式绑定事件
     btn.onclick = function(e) {
       e.preventDefault();
       e.stopPropagation();
-      console.log('[移动导航] 点击按钮, view=', view);
 
       // 调用视图切换
       if (ui && ui.switchView) {
         ui.switchView(view);
-      } else {
-        console.error('[移动导航] ui 或 ui.switchView 未定义');
       }
     };
   });
@@ -69,7 +71,6 @@ function bindMobileNavEvents() {
   // 重写 switchView 方法以同步底部导航状态
   if (originalSwitchView) {
     ui.switchView = function(view) {
-      console.log('[移动导航] switchView 调用:', view);
       // 调用原始方法
       originalSwitchView.call(this, view);
 
@@ -81,8 +82,6 @@ function bindMobileNavEvents() {
         }
       });
     };
-  } else {
-    console.error('[移动导航] ui.switchView 未定义');
   }
 }
 
