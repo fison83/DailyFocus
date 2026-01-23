@@ -38,18 +38,11 @@ function init() {
 
 // 绑定移动端导航事件
 function bindMobileNavEvents() {
-  const debugEl = document.getElementById('debugInfo');
-
   console.log('[移动导航] 开始绑定事件');
 
   // 底部导航点击事件
   const navBtns = document.querySelectorAll('.mobile-bottom-nav .nav-btn[data-view]');
   console.log('[移动导航] 找到导航按钮数量:', navBtns.length);
-
-  // 更新调试信息
-  if (debugEl) {
-    debugEl.innerHTML = `导航按钮数量: ${navBtns.length}<br>状态: 绑定完成<br>时间: ${new Date().toLocaleTimeString()}`;
-  }
 
   navBtns.forEach((btn, index) => {
     const view = btn.getAttribute('data-view');
@@ -59,22 +52,13 @@ function bindMobileNavEvents() {
     btn.onclick = function(e) {
       e.preventDefault();
       e.stopPropagation();
-
       console.log('[移动导航] 点击按钮, view=', view);
-
-      // 更新调试信息
-      if (debugEl) {
-        debugEl.innerHTML = `点击: ${view}<br>时间: ${new Date().toLocaleTimeString()}`;
-      }
 
       // 调用视图切换
       if (ui && ui.switchView) {
         ui.switchView(view);
       } else {
         console.error('[移动导航] ui 或 ui.switchView 未定义');
-        if (debugEl) {
-          debugEl.innerHTML = `❌ 错误: ui 未定义<br>时间: ${new Date().toLocaleTimeString()}`;
-        }
       }
     };
   });
@@ -86,12 +70,6 @@ function bindMobileNavEvents() {
   if (originalSwitchView) {
     ui.switchView = function(view) {
       console.log('[移动导航] switchView 调用:', view);
-
-      // 更新调试信息
-      if (debugEl) {
-        debugEl.innerHTML = `切换到: ${view}<br>时间: ${new Date().toLocaleTimeString()}`;
-      }
-
       // 调用原始方法
       originalSwitchView.call(this, view);
 
@@ -105,9 +83,6 @@ function bindMobileNavEvents() {
     };
   } else {
     console.error('[移动导航] ui.switchView 未定义');
-    if (debugEl) {
-      debugEl.innerHTML = `❌ 错误: ui.switchView 未定义<br>时间: ${new Date().toLocaleTimeString()}`;
-    }
   }
 }
 
