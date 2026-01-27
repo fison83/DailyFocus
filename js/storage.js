@@ -245,10 +245,11 @@ class Storage {
     console.log('[云同步下载] Token 前缀:', token ? token.substring(0, 7) + '...' : '无');
     console.log('[云同步下载] Gist ID:', gistId);
 
-    try {
-      if (!gistId) {
-        return {
-          success: false,
+    // 提前检查 gistId
+    if (!gistId) {
+      this.isDownloading = false;
+      return {
+        success: false,
         message: '请先上传数据或输入 Gist ID'
       };
     }
