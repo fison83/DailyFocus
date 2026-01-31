@@ -133,3 +133,63 @@ Simply open `index.html` in a browser. No build step required.
 
 ### Debugging
 Open browser DevTools (F12) and use the console. All managers are accessible globally for debugging.
+
+## Version Management
+
+### Version Number Format
+
+**Semantic Versioning**: `主版本.次版本.修订号` (e.g., 5.1.0)
+
+| Type | When to Update | Example |
+|-----|---------------|---------|
+| **主版本** | Major features, architecture changes | 5.0 → 6.0 |
+| **次版本** | New features, important bug fixes | 5.0 → 5.1 |
+| **修订号** | Small fixes, documentation, tweaks | 5.1.0 → 5.1.1 |
+
+### Version Update Process
+
+When making changes, ALWAYS update version numbers:
+
+1. **Update `js/config.js`**:
+   ```javascript
+   VERSION: '5.1.0',  // Update this
+   ```
+
+2. **Update `index.html`** (for cache busting):
+   ```html
+   <link rel="stylesheet" href="css/style.css?v=5.1.0">
+   <script src="js/app.js?v=5.1.0"></script>
+   ```
+
+3. **Add to CHANGELOG** in `config.js`:
+   ```javascript
+   {
+     version: '5.1.0',
+     date: '2025-01-31',
+     changes: [
+       '描述变更内容',
+       '修复了 xxx 问题'
+     ]
+   }
+   ```
+
+### Version Update Decision Tree
+
+```
+Is it a breaking change or major feature?
+→ YES: Update 主版本 (5.0 → 6.0)
+→ NO:
+    Is it a new feature or important fix?
+    → YES: Update 次版本 (5.0 → 5.1)
+    → NO: Update 修订号 (5.1.0 → 5.1.1)
+```
+
+### Examples
+
+| Change | Version Update |
+|--------|---------------|
+| Add mobile responsive design | 5.0 → 5.1.0 |
+| Fix batch delete bug | 5.1 → 5.2.0 |
+| Update documentation | 5.2.0 → 5.2.1 |
+| Complete UI redesign | 5.2 → 6.0.0 |
+| Fix typo in text | 5.2.1 → 5.2.2 |
