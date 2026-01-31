@@ -1,6 +1,6 @@
 // DailyFocus 配置文件
 const CONFIG = {
-  VERSION: '5.3.0',
+  VERSION: '5.3.1',
   APP_NAME: 'DailyFocus',
 
   // localStorage 键名
@@ -29,6 +29,13 @@ const CONFIG = {
 
   // 更新日志
   CHANGELOG: [
+    {
+      version: '5.3.1',
+      date: '2025-01-31',
+      changes: [
+        '精简文档体系：合并为 README.md 和 CLAUDE.md 两个文档'
+      ]
+    },
     {
       version: '5.3.0',
       date: '2025-01-31',
