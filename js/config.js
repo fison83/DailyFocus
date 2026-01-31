@@ -1,6 +1,6 @@
 // DailyFocus 配置文件
 const CONFIG = {
-  VERSION: '5.3.1',
+  VERSION: '5.3.2',
   APP_NAME: 'DailyFocus',
 
   // localStorage 键名
@@ -29,6 +29,13 @@ const CONFIG = {
 
   // 更新日志
   CHANGELOG: [
+    {
+      version: '5.3.2',
+      date: '2025-01-31',
+      changes: [
+        '修复 XSS 风险：stats.js 搜索框和 ui.js 标签属性转义'
+      ]
+    },
     {
       version: '5.3.1',
       date: '2025-01-31',

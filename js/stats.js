@@ -156,7 +156,7 @@ class StatsManager {
 
         <!-- 工具栏 -->
         <div class="modal-toolbar">
-          <input type="text" class="modal-search" placeholder="🔍 搜索任务..." id="modalSearch" value="${this.modalSearchQuery}">
+          <input type="text" class="modal-search" placeholder="🔍 搜索任务..." id="modalSearch" value="${this.escapeHtml(this.modalSearchQuery)}">
           <select class="modal-filter" id="modalFilter">
             <option value="all" ${this.modalFilter === 'all' ? 'selected' : ''}>全部</option>
             <option value="pending" ${this.modalFilter === 'pending' ? 'selected' : ''}>未完成</option>

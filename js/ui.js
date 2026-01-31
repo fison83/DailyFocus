@@ -137,7 +137,7 @@ class UIManager {
       container.innerHTML = storage.customTags.map(tag => `
         <div class="tag-item">
           <span>${this.escapeHtml(tag)}</span>
-          <button class="tag-item-remove" onclick="ui.removeTag('${this.escapeHtml(tag)}')">×</button>
+          <button class="tag-item-remove" onclick="ui.removeTag('${this.escapeAttr(tag)}')">×</button>
         </div>
       `).join('');
     }
@@ -171,7 +171,7 @@ class UIManager {
     // 各个标签选项
     html += storage.customTags.map(tag => `
       <span class="tag-filter ${allTasksManager.currentTag === tag ? 'active' : ''}"
-            onclick="allTasksManager.setTagFilter('${this.escapeHtml(tag)}')">
+            onclick="allTasksManager.setTagFilter('${this.escapeAttr(tag)}')">
         ${this.escapeHtml(tag)}
       </span>
     `).join('');
@@ -385,6 +385,11 @@ class UIManager {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  // 转义HTML属性值（用于 onclick 等属性中）
+  escapeAttr(text) {
+    return this.escapeHtml(text).replace(/'/g, '&#39;');
   }
 
   // ========== 云同步 UI 方法 ==========
