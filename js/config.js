@@ -1,6 +1,6 @@
 // DailyFocus 配置文件
 const CONFIG = {
-  VERSION: '5.3.2',
+  VERSION: '5.4.0',
   APP_NAME: 'DailyFocus',
 
   // localStorage 键名
@@ -29,6 +29,14 @@ const CONFIG = {
 
   // 更新日志
   CHANGELOG: [
+    {
+      version: '5.4.0',
+      date: '2025-01-31',
+      changes: [
+        '统一颜色管理：提取红色/橙色/灰色/透明色为 CSS 变量',
+        '完善错误处理：为 save 方法添加 try-catch 保护'
+      ]
+    },
     {
       version: '5.3.2',
       date: '2025-01-31',

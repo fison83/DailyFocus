@@ -5,29 +5,69 @@
     }
 
     :root {
+      /* 绿色系（主题色） */
       --primary-green: #4CAF50;
       --light-green: #81C784;
-      --pale-green: #E8F5E9;
+      --pale-green: var(--bg-hover);
       --dark-green: #388E3C;
+
+      /* 文字颜色 */
       --text-primary: #2E7D32;
       --text-secondary: #43A047;
       --text-light: #66BB6A;
+
+      /* 背景颜色 */
       --bg-primary: #F1F8E9;
       --bg-secondary: #FFFFFF;
+      --bg-hover: var(--bg-hover);
+
+      /* 边框颜色 */
       --border-color: #C8E6C9;
+
+      /* 红色系（警告、错误、删除） */
+      --danger-red: var(--danger-red);
+      --danger-light: var(--danger-light);
+      --danger-border: var(--danger-border);
+      --danger-dark: var(--danger-dark);
+
+      /* 橙色系（警告、延期） */
+      --warning-orange: var(--warning-orange);
+      --warning-dark: var(--warning-dark);
+      --warning-text: var(--warning-text);
+
+      /* 灰色系 */
+      --gray-light: var(--gray-light);
+      --gray: var(--gray);
+
+      /* 阴影 */
       --shadow-sm: 0 2px 8px rgba(76, 175, 80, 0.08);
       --shadow-md: 0 4px 12px rgba(76, 175, 80, 0.12);
       --shadow-lg: 0 8px 24px rgba(76, 175, 80, 0.15);
+      --shadow-focus: var(--shadow-focus);
+      --shadow-nav: var(--shadow-nav);
+
+      /* 透明色 */
+      --white-30: var(--white-30);
+      --white-20: var(--white-20);
+      --black-30: var(--black-30);
+      --black-20: var(--black-20);
+      --black-10: var(--black-10);
+
+      /* 圆角 */
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 20px;
+
+      /* 过渡 */
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* 尺寸 */
       --sidebar-width: 200px;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
-      background: linear-gradient(135deg, #F1F8E9 0%, #E8F5E9 100%);
+      background: linear-gradient(135deg, #F1F8E9 0%, var(--bg-hover) 100%);
       color: var(--text-primary);
       height: 100vh;
       overflow: hidden;
@@ -207,7 +247,7 @@
     .progress-bar {
       width: 80px;
       height: 5px;
-      background: rgba(255, 255, 255, 0.3);
+      background: var(--white-30);
       border-radius: 3px;
       overflow: hidden;
     }
@@ -227,8 +267,8 @@
 
     .btn-banner {
       padding: 5px 12px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: var(--white-20);
+      border: 1px solid var(--white-30);
       border-radius: 6px;
       color: white;
       font-size: 11px;
@@ -238,7 +278,7 @@
     }
 
     .btn-banner:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: var(--white-30);
     }
 
     /* 快速添加栏 */
@@ -267,7 +307,7 @@
     .quick-add-input:focus {
       outline: none;
       border-color: var(--primary-green);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      box-shadow: var(--shadow-focus);
     }
 
     .quick-add-input::placeholder {
@@ -358,8 +398,8 @@
     }
 
     .priority-btn.urgent.active {
-      background: #FF9800;
-      border-color: #FF9800;
+      background: var(--warning-dark);
+      border-color: var(--warning-dark);
     }
 
     /* 快速添加截止日期选择器 */
@@ -388,7 +428,7 @@
     .due-date-select:focus {
       outline: none;
       border-color: var(--primary-green);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      box-shadow: var(--shadow-focus);
     }
 
     .due-date-picker {
@@ -409,7 +449,7 @@
     .due-date-picker:focus {
       outline: none;
       border-color: var(--primary-green);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      box-shadow: var(--shadow-focus);
     }
 
     /* 内容区域 */
@@ -719,7 +759,7 @@
     }
 
     .task-delete-btn:hover {
-      background: #FF5252;
+      background: var(--danger-dark);
       color: white;
     }
 
@@ -781,10 +821,10 @@
     }
 
     /* 颜色 */
-    .dot-red { background: #EF5350; }
+    .dot-red { background: var(--danger-red); }
     .dot-green { background: #4CAF50; }
-    .dot-orange { background: #FFA726; }
-    .dot-gray { background: #BDBDBD; }
+    .dot-orange { background: var(--warning-orange); }
+    .dot-gray { background: var(--gray); }
 
     /* 滚动条 */
     .quadrant-tasks::-webkit-scrollbar,
@@ -1206,7 +1246,7 @@
 
     .reading-card-rating {
       font-size: 14px;
-      color: #FFB300;
+      color: var(--warning-text);
     }
 
     .reading-card-summary {
@@ -1246,12 +1286,12 @@
     }
 
     .btn-reading-action.delete {
-      background: #FFEBEE;
-      color: #EF5350;
+      background: var(--danger-light);
+      color: var(--danger-red);
     }
 
     .btn-reading-action.delete:hover {
-      background: #FFCDD2;
+      background: var(--danger-border);
     }
 
     /* 阅读记录编辑面板 */
@@ -1270,7 +1310,7 @@
 
     .reading-form-section.required .reading-form-section-title::before {
       content: '* ';
-      color: #EF5350;
+      color: var(--danger-red);
     }
 
     .rating-stars {
@@ -1281,13 +1321,13 @@
     .rating-star {
       font-size: 24px;
       cursor: pointer;
-      color: #E0E0E0;
+      color: var(--gray-light);
       transition: var(--transition);
     }
 
     .rating-star:hover,
     .rating-star.active {
-      color: #FFB300;
+      color: var(--warning-text);
     }
 
     .key-points-list {
@@ -1368,7 +1408,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.3);
+      background: var(--black-30);
       opacity: 0;
       visibility: hidden;
       transition: var(--transition);
@@ -1404,8 +1444,8 @@
     }
 
     .btn-close-panel:hover {
-      background: #FFEBEE;
-      color: #EF5350;
+      background: var(--danger-light);
+      color: var(--danger-red);
     }
 
     .form-grid {
@@ -1441,7 +1481,7 @@
     .form-input:focus, .form-textarea:focus, .form-select:focus {
       outline: none;
       border-color: var(--primary-green);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      box-shadow: var(--shadow-focus);
     }
 
     .form-textarea {
@@ -1505,8 +1545,8 @@
 
     .btn-delete {
       padding: 8px 20px;
-      background: #FFEBEE;
-      color: #EF5350;
+      background: var(--danger-light);
+      color: var(--danger-red);
       border: none;
       border-radius: var(--radius-sm);
       font-size: 13px;
@@ -1516,7 +1556,7 @@
     }
 
     .btn-delete:hover {
-      background: #FFCDD2;
+      background: var(--danger-border);
     }
 
     /* 响应式 */
@@ -1548,7 +1588,7 @@
         border-bottom: 1px solid var(--border-color);
         padding: 8px 0;
         z-index: 100;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-nav);
       }
 
       .nav-btn {
@@ -1812,7 +1852,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.3);
+      background: var(--black-30);
       cursor: pointer;
     }
     
@@ -1858,8 +1898,8 @@
     }
     
     .btn-close-modal:hover {
-      background: #FFEBEE;
-      color: #EF5350;
+      background: var(--danger-light);
+      color: var(--danger-red);
     }
     
     .modal-body {
@@ -1957,7 +1997,7 @@
     
     .collapsible-header-title.required::before {
       content: '*';
-      color: #EF5350;
+      color: var(--danger-red);
     }
     
     .collapsible-icon {
@@ -2009,7 +2049,7 @@
     .all-tasks-search input:focus {
       outline: none;
       border-color: var(--primary-green);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      box-shadow: var(--shadow-focus);
     }
 
     .all-tasks-filters {
@@ -2104,7 +2144,7 @@
 
     .batch-delete-btn {
       padding: 6px 14px;
-      background: #EF5350;
+      background: var(--danger-red);
       color: white;
       border: none;
       border-radius: var(--radius-sm);
@@ -2254,7 +2294,7 @@
     }
 
     .btn-task-action:hover {
-      background: #FFEBEE;
+      background: var(--danger-light);
     }
 
     /* ========== 日历视图 ========== */
@@ -2404,11 +2444,11 @@
     }
 
     .task-dot.urgent-important {
-      background: #EF5350;
+      background: var(--danger-red);
     }
 
     .task-dot.urgent {
-      background: #FF9800;
+      background: var(--warning-dark);
     }
 
     .task-dot.important {
@@ -2420,7 +2460,7 @@
     }
 
     .task-dot.more {
-      background: #BDBDBD;
+      background: var(--gray);
       font-size: 8px;
       color: #666;
       width: auto;
@@ -2654,27 +2694,27 @@
 
     /* 回收站相关样式 */
     .filter-btn.deleted-filter {
-      color: #EF5350;
+      color: var(--danger-red);
     }
 
     .filter-btn.deleted-filter:hover {
-      background: #FFEBEE;
-      border-color: #EF5350;
+      background: var(--danger-light);
+      border-color: var(--danger-red);
     }
 
     .filter-btn.deleted-filter.active {
-      background: #EF5350;
+      background: var(--danger-red);
       color: white;
-      border-color: #EF5350;
+      border-color: var(--danger-red);
     }
 
     .all-task-item.deleted {
       opacity: 0.7;
-      background: #FFEBEE;
+      background: var(--danger-light);
     }
 
     .task-status-badge.deleted {
-      background: #FFCDD2;
+      background: var(--danger-border);
       color: #C62828;
     }
 
@@ -2687,7 +2727,7 @@
     }
 
     .btn-task-action.permanent-delete-btn {
-      background: #FFCDD2;
+      background: var(--danger-border);
     }
 
     .btn-task-action.permanent-delete-btn:hover {
@@ -2779,13 +2819,13 @@
     }
 
     .sync-message.success {
-      background: #E8F5E9;
+      background: var(--bg-hover);
       color: #2E7D32;
       border: 1px solid #A5D6A7;
     }
 
     .sync-message.error {
-      background: #FFEBEE;
+      background: var(--danger-light);
       color: #C62828;
       border: 1px solid #EF9A9A;
     }

@@ -34,30 +34,46 @@ class Storage {
 
   // 保存任务
   saveTasks() {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.TASKS, JSON.stringify(this.tasks));
-    // 触发自动上传
-    this.autoUpload();
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TASKS, JSON.stringify(this.tasks));
+      // 触发自动上传
+      this.autoUpload();
+    } catch (error) {
+      console.error('保存任务失败:', error);
+    }
   }
 
   // 保存目标
   saveGoals() {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.GOALS, JSON.stringify(this.goals));
-    // 触发自动上传
-    this.autoUpload();
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.GOALS, JSON.stringify(this.goals));
+      // 触发自动上传
+      this.autoUpload();
+    } catch (error) {
+      console.error('保存目标失败:', error);
+    }
   }
 
   // 保存标签
   saveTags() {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.TAGS, JSON.stringify(this.customTags));
-    // 触发自动上传
-    this.autoUpload();
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.TAGS, JSON.stringify(this.customTags));
+      // 触发自动上传
+      this.autoUpload();
+    } catch (error) {
+      console.error('保存标签失败:', error);
+    }
   }
 
   // 保存阅读记录
   saveReading() {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.READING, JSON.stringify(this.readingRecords));
-    // 触发自动上传
-    this.autoUpload();
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.READING, JSON.stringify(this.readingRecords));
+      // 触发自动上传
+      this.autoUpload();
+    } catch (error) {
+      console.error('保存阅读记录失败:', error);
+    }
   }
 
   // 导出数据 - V5: 文件名添加时间戳
