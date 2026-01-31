@@ -1,6 +1,6 @@
 // DailyFocus 配置文件
 const CONFIG = {
-  VERSION: '5.0',
+  VERSION: '5.1',
   APP_NAME: 'DailyFocus',
 
   // localStorage 键名
@@ -29,6 +29,17 @@ const CONFIG = {
 
   // 更新日志
   CHANGELOG: [
+    {
+      version: '5.1',
+      date: '2025-01-31',
+      changes: [
+        '新增移动端响应式优化（1024px/768px/480px 断点）',
+        '新增移动端顶部导航栏',
+        '修复批量删除在回收站中执行永久删除而非软删除',
+        '修复 storage.js 语法错误导致的初始化失败问题',
+        '新增新手入门指南和 CLAUDE.md 文档'
+      ]
+    },
     {
       version: '5.0',
       date: '2025-01-07',

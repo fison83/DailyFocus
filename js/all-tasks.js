@@ -167,11 +167,29 @@ class AllTasksManager {
 
   // 批量删除
   batchDelete() {
-    if (this.selectedTasks.size === 0) return;
+    if (this.selectedTasks.size === 0) {
+      return;
+    }
 
-    this.selectedTasks.forEach(taskId => {
-      taskManager.softDeleteTask(taskId);
-    });
+    // 在回收站中执行永久删除，在其他视图中执行软删除
+    const isRecycleBin = this.currentFilter === 'deleted';
+
+    if (isRecycleBin) {
+      // 回收站：永久删除
+      if (!confirm(`确定要永久删除这 ${this.selectedTasks.size} 个任务吗？此操作不可撤销！`)) {
+        return;
+      }
+
+      this.selectedTasks.forEach(taskId => {
+        taskManager.permanentDeleteTask(taskId);
+      });
+    } else {
+      // 其他视图：软删除（移到回收站）
+      this.selectedTasks.forEach(taskId => {
+        taskManager.softDeleteTask(taskId);
+      });
+    }
+
     this.selectedTasks.clear();
     this.render();
   }
