@@ -7,6 +7,7 @@ class CalendarManager {
     this.currentYear = this.currentDate.getFullYear();
     this.viewMode = 'due'; // 'due' 或 'created'
     this.currentModal = null; // 当前弹窗引用
+    this.currentModalDate = null; // 当前弹窗显示的日期
   }
 
   // 设置视图模式
@@ -131,11 +132,15 @@ class CalendarManager {
 
       // 过期标记和完成率
       let metaHtml = '';
-      if (overdueTasks.length > 0) {
-        metaHtml += `<span class="calendar-overdue-badge">⚠️ ${overdueTasks.length}</span>`;
-      }
-      if (totalTasks > 0) {
-        metaHtml += `<span class="calendar-completion">${completedTasks}/${totalTasks}</span>`;
+      if (overdueTasks.length > 0 || totalTasks > 0) {
+        metaHtml = '<div class="calendar-day-meta">';
+        if (overdueTasks.length > 0) {
+          metaHtml += `<span class="calendar-overdue-badge">⚠️${overdueTasks.length}</span>`;
+        }
+        if (totalTasks > 0) {
+          metaHtml += `<span class="calendar-completion">${completedTasks}/${totalTasks}</span>`;
+        }
+        metaHtml += '</div>';
       }
 
       html += `
@@ -182,6 +187,7 @@ class CalendarManager {
   showDayTasks(dateStr) {
     // 关闭已存在的弹窗
     this.closeModal();
+    this.currentModalDate = dateStr;
 
     const tasks = this.getTasksForDate(dateStr);
     const date = new Date(dateStr);
@@ -241,6 +247,7 @@ class CalendarManager {
       this.currentModal.remove();
       this.currentModal = null;
     }
+    this.currentModalDate = null;
   }
 
   // 处理任务操作
@@ -251,7 +258,13 @@ class CalendarManager {
       taskManager.toggleComplete(taskId);
     }
     this.render();
-    this.closeModal();
+
+    // 如果弹窗是打开的，重新加载内容
+    if (this.currentModalDate) {
+      const savedDate = this.currentModalDate;
+      this.closeModal();
+      this.showDayTasks(savedDate);
+    }
   }
 
   // 转义HTML

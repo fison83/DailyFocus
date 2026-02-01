@@ -1,6 +1,6 @@
 // DailyFocus 配置文件
 const CONFIG = {
-  VERSION: '5.4.0',
+  VERSION: '5.4.1',
   APP_NAME: 'DailyFocus',
 
   // localStorage 键名
@@ -29,6 +29,14 @@ const CONFIG = {
 
   // 更新日志
   CHANGELOG: [
+    {
+      version: '5.4.1',
+      date: '2025-01-31',
+      changes: [
+        '优化日历格子显示：过期标记和完成率使用徽章样式',
+        '修复顺延后弹窗关闭：操作后自动刷新并保持弹窗打开'
+      ]
+    },
     {
       version: '5.4.0',
       date: '2025-01-31',
