@@ -1,6 +1,6 @@
 // DailyFocus 配置文件
 const CONFIG = {
-  VERSION: '5.4.1',
+  VERSION: '5.5.0',
   APP_NAME: 'DailyFocus',
 
   // localStorage 键名
@@ -29,6 +29,16 @@ const CONFIG = {
 
   // 更新日志
   CHANGELOG: [
+    {
+      version: '5.5.0',
+      date: '2025-01-31',
+      changes: [
+        '重新设计日历视图：采用列表布局，更清晰易用',
+        '新增快速完成任务：点击复选框直接完成',
+        '新增日期折叠功能：点击日期头部折叠/展开',
+        '优化移动端适配：触摸目标更大，布局更紧凑'
+      ]
+    },
     {
       version: '5.4.1',
       date: '2025-01-31',

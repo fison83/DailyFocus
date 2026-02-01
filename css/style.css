@@ -1832,6 +1832,81 @@
       .sync-help ol {
         padding-left: 18px;
       }
+
+      /* ========== 日历列表视图移动端 ========== */
+      .calendar-list-container {
+        padding: 12px;
+      }
+
+      .day-list-item {
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+      }
+
+      .day-header {
+        margin-bottom: 10px;
+      }
+
+      .day-date {
+        font-size: 15px;
+      }
+
+      .day-weekday {
+        font-size: 13px;
+      }
+
+      .day-task-count {
+        font-size: 12px;
+        padding: 3px 8px;
+      }
+
+      .task-row {
+        padding: 8px 10px;
+        gap: 10px;
+      }
+
+      .task-checkbox {
+        width: 20px;
+        height: 20px;
+      }
+
+      .task-title {
+        font-size: 14px;
+      }
+
+      .task-meta {
+        font-size: 11px;
+        gap: 6px;
+      }
+
+      .task-tag {
+        padding: 2px 6px;
+      }
+
+      .calendar-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .calendar-title {
+        font-size: 16px;
+        order: -1;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+
+      .calendar-nav-btn {
+        padding: 5px 10px;
+        font-size: 14px;
+      }
+
+      .calendar-view-toggle {
+        padding: 5px 10px;
+        font-size: 12px;
+      }
     }
 
     /* ========== V5 新增样式 ========== */
@@ -2297,293 +2372,261 @@
       background: var(--danger-light);
     }
 
-    /* ========== 日历视图 ========== */
-    .calendar-container {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-md);
-      height: 100%;
-      display: flex;
-      flex-direction: column;
+    /* ========== 日历列表视图 ========== */
+
+    .calendar-list-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
+    /* 日历头部 */
     .calendar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      padding: 0 8px;
+    }
+
+    .calendar-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
 
     .calendar-nav-btn {
-      padding: 8px 16px;
-      background: var(--primary-green);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 16px;
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
       cursor: pointer;
       transition: var(--transition);
     }
 
     .calendar-nav-btn:hover {
-      background: var(--dark-green);
-    }
-
-    .calendar-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--dark-green);
-    }
-
-    .calendar-view-toggle {
-      padding: 6px 12px;
-      background: var(--pale-green);
-      color: var(--dark-green);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .calendar-view-toggle:hover {
-      background: var(--light-green);
-      color: white;
-    }
-
-    .calendar-weekdays {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .calendar-weekday {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      padding: 8px;
-    }
-
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    .calendar-day {
-      min-height: 70px;
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-      background: white;
-    }
-
-    .calendar-day:hover {
-      background: var(--pale-green);
+      background: var(--bg-hover);
       border-color: var(--light-green);
     }
 
-    .calendar-day.empty {
-      background: transparent;
-      border: none;
-      cursor: default;
-    }
-
-    .calendar-day.today {
-      border: 2px solid var(--primary-green);
-      background: var(--pale-green);
-    }
-
-    .calendar-day.has-tasks::after {
-      content: '';
-      position: absolute;
-      bottom: 6px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 6px;
-      height: 6px;
-      background: var(--primary-green);
-      border-radius: 50%;
-    }
-
-    .calendar-day.has-completed::before {
-      content: '';
-      position: absolute;
-      bottom: 6px;
-      left: calc(50% - 10px);
-      width: 6px;
-      height: 6px;
-      background: var(--light-green);
-      border-radius: 50%;
-    }
-
-    /* 任务点容器 */
-    .calendar-dots {
-      display: flex;
-      gap: 3px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 4px;
-    }
-
-    /* 任务点 */
-    .task-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .task-dot.urgent-important {
-      background: var(--danger-red);
-    }
-
-    .task-dot.urgent {
-      background: var(--warning-dark);
-    }
-
-    .task-dot.important {
-      background: #4CAF50;
-    }
-
-    .task-dot.normal {
-      background: #2196F3;
-    }
-
-    .task-dot.more {
-      background: var(--gray);
-      font-size: 8px;
-      color: #666;
-      width: auto;
-      min-width: 14px;
-      height: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-    }
-
-    /* 完成标记 */
-    .task-dot.completed {
-      position: relative;
-    }
-
-    .task-dot.completed::after {
-      content: '✓';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 6px;
-      color: white;
-      font-weight: bold;
-    }
-
-    .calendar-day-number {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .calendar-day.empty .calendar-day-number {
-      display: none;
-    }
-
-    /* 日历格子元信息容器 */
-    .calendar-day-meta {
-      display: flex;
-      gap: 4px;
-      justify-content: center;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-
-    /* 过期标记 */
-    .calendar-overdue-badge {
-      background: var(--danger-light);
-      color: var(--danger-red);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-weight: 500;
-    }
-
-    /* 完成率 */
-    .calendar-completion {
-      background: var(--bg-hover);
-      color: var(--text-secondary);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-weight: 500;
-    }
-
-    /* 日历任务详情弹窗 */
-    .calendar-task-modal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .calendar-view-toggle {
       background: white;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      z-index: 3000;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-secondary);
     }
 
-    .calendar-modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-      background: var(--pale-green);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    /* 日期块 */
+    .day-list-item {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-left: 4px solid var(--primary-green);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: var(--transition);
     }
 
-    .calendar-modal-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--dark-green);
+    .day-list-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .calendar-modal-body {
-      padding: 16px 20px;
-      max-height: 60vh;
-      overflow-y: auto;
-    }
-
-    .calendar-task-item {
-      padding: 10px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .calendar-task-item:last-child {
-      border-bottom: none;
-    }
-
-    .calendar-task-item.completed {
+    .day-list-item.empty {
+      border-left-color: var(--gray);
       opacity: 0.6;
     }
 
-    .calendar-task-title {
-      font-size: 13px;
-      font-weight: 500;
+    .day-list-item.today {
+      border-left-color: var(--primary-green);
+      background: var(--bg-hover);
     }
 
-    .calendar-task-item.completed .calendar-task-title {
+    .day-list-item.overdue {
+      border-left-color: var(--danger-red);
+    }
+
+    /* 日期头部 */
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .day-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .day-date {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .day-weekday {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .day-task-count {
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--bg-hover);
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    .day-collapse-icon {
+      font-size: 12px;
+      color: var(--text-light);
+      transition: transform 0.2s;
+    }
+
+    .day-list-item.collapsed .day-collapse-icon {
+      transform: rotate(-90deg);
+    }
+
+    /* 任务列表 */
+    .day-task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .day-list-item.collapsed .day-task-list {
+      display: none;
+    }
+
+    /* 任务行 */
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .task-row:hover {
+      background: var(--bg-hover);
+    }
+
+    .task-row.completed {
+      opacity: 0.6;
+    }
+
+    .task-row.completed .task-title {
       text-decoration: line-through;
+    }
+
+    /* 任务复选框 */
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      margin-top: 2px;
+    }
+
+    .task-checkbox:hover {
+      border-color: var(--primary-green);
+    }
+
+    .task-checkbox.checked {
+      background: var(--primary-green);
+      border-color: var(--primary-green);
+    }
+
+    .task-checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* 任务内容 */
+    .task-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-title {
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .task-tag {
+      background: var(--bg-hover);
+      color: var(--text-secondary);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .task-due-date {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-due-date.overdue {
+      color: var(--danger-red);
+    }
+
+    .task-due-date.today {
+      color: var(--warning-text);
+    }
+
+    .task-status {
+      color: var(--primary-green);
+    }
+
+    /* 空状态 */
+    .calendar-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-light);
+    }
+
+    .calendar-empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    /* 隐藏原网格相关样式 */
+    .calendar-weekdays,
+    .calendar-days,
+    .calendar-day-number {
+      display: none;
     }
 
     /* ========== 统计页面增强 ========== */
